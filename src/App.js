@@ -3,7 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import Comp, { Comp1, GetComp } from './Comp1';
 import Finder from './Finder';
-import {treeJson} from './MenuDat';
+//import {treeJson} from './MenuDat';
 //dark
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
@@ -26,11 +26,14 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TreeItem from '@material-ui/lab/TreeItem';
 
+let treeJson = [];
 
 const useStyles = makeStyles({
   root: {
     flexGrow: 1,
-    minWidth: 200
+    marginRight: 20,
+    marginLeft: 5
+    
   },
 });
 
@@ -112,10 +115,9 @@ function App(props) {
   const [loading, setLoading] = useState(true);
   //const [treeJson, SetTree] = useState([]);
 
-  //async 
-  function getTree() {
-    /*
-    const url = "http://127.0.0.1:5000/ustore/gettree";
+  async function getTree() {
+    
+    const url = baseUrl + "ustore/gettree";
     const response = await fetch(url,
       {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
@@ -124,10 +126,10 @@ function App(props) {
         credentials: 'omit' // include, *same-origin, omit
       }
     );
-    */
-    //const data = await response.json();
+    
+    const data = await response.json();
     //SetTree(data);
-    //treeJson = data;
+    treeJson = data;
     menuMap.clear();
     createMenuMap(treeJson);
     setLoading(false);
@@ -157,11 +159,7 @@ function App(props) {
 
 
   const toggleDrawer = (open) => (event) => {
-    /*
-    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-      return;
-    }
-    */
+    
     setStateDrawer(open);
 
   };
