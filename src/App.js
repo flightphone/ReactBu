@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Comp, { Comp1, GetComp } from './Comp1';
+import Finder from './Finder';
 import {treeJson} from './MenuDat';
 //dark
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -32,6 +33,8 @@ const useStyles = makeStyles({
     minWidth: 200
   },
 });
+
+const baseUrl = "http://127.0.0.1:5000/";
 
 let menuMap = new Map();
 function createMenuMap(tree) {
@@ -83,7 +86,7 @@ function App(props) {
   function getForm(id)
   {
     let p = menuMap.get(id);
-    let control = (p.link1 == "Bureau.Finder")?Comp:Comp1;
+    let control = (p.params)?Finder:Comp1;
     let params = p.params;
     return {
       Conrol : control,
@@ -173,8 +176,7 @@ function App(props) {
   {
     let value = openMap.get(id);
     let Cm = value.Control;
-    return <Cm visible={(current == id)} show={show} params={value.Params} />
-    
+    return <Cm visible={(current == id)} show={show} params={value.Params} id = {id}/>
   }
 
   return (
@@ -214,3 +216,4 @@ function App(props) {
 }
 
 export default App;
+export {baseUrl};
