@@ -95,8 +95,8 @@ function Comp(props) {
   };
   */
   const classes = useStyles();
-  const { id, visible } = props;
-  const p = MainList[id];
+  const { visible } = props;
+  const p = MainList[0];
 
   //const p = new Fin();
   //p.items = ["aa", "bb", "cc"];
@@ -151,7 +151,7 @@ function Comp(props) {
         <div className={classes.offset} />
 
         <div>
-          <span>{id}</span>
+          
           <input type="text" value={txt} onChange={handleChange} />
         </div>
         <Tooltip title="Добавить">

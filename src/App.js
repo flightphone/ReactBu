@@ -43,6 +43,18 @@ function createMenuMap(tree) {
   });
 }
 
+let openMap = new Map();
+let startObj = {
+      Control: Comp1,
+      Params: {},
+      data: {}
+}
+openMap.set("-1", startObj);
+
+let openIDs = [];
+openIDs.push("-1");
+
+
 
 function App(props) {
   const classes = useStyles();
@@ -60,12 +72,38 @@ function App(props) {
     [prefersDarkMode],
   );
 
-
-  const [current, Setcurrent] = useState(-1);
-  const [id, SetId] = useState(0);
+  
+  const [current, Setcurrent] = useState("-1");
+ 
 
   function show() {
     setStateDrawer(true);
+  }
+
+  function getForm(id)
+  {
+    let p = menuMap.get(id);
+    let control = (p.link1 == "Bureau.Finder")?Comp:Comp1;
+    let params = p.params;
+    return {
+      Conrol : control,
+      Params : params
+    }
+  }
+
+  function open(id) {
+      if (openMap.get(id)==null)
+      {
+         let c = getForm(id);
+         let obj = {
+           Control : c.Conrol,
+           Params  : c.Params,
+           data : {}
+         } 
+         openMap.set(id, obj);
+         openIDs.push(id);
+      }  
+      Setcurrent(id);
   }
 
   const [loading, setLoading] = useState(true);
@@ -103,12 +141,8 @@ function App(props) {
     setSelected(nodeIds);
     if (menuMap.get(nodeIds)) {
       setStateDrawer(false);
-      if (nodeIds == "631")
-        Setcurrent(0);
-      else if (nodeIds == "886")
-        Setcurrent(1);
-      else
-        Setcurrent(-1);
+
+      open(nodeIds);
 
     }
   };
@@ -134,6 +168,15 @@ function App(props) {
       {Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node)) : null}
     </TreeItem>
   );
+
+  function rendItem(id)
+  {
+    let value = openMap.get(id);
+    let Cm = value.Control;
+    return <Cm visible={(current == id)} show={show} params={value.Params} />
+    
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -160,12 +203,11 @@ function App(props) {
             }
           </div>
         </Drawer>
-
-        <Comp1 visible={(current == -1)} show={show} />
-        <Comp id={0} visible={(current == 0)} show={show} />
-        <Comp id={1} visible={(current == 1)} show={show} />
-
-
+          {
+            openIDs.map((id)=>(
+              rendItem(id)
+            ))
+          }     
       </React.Fragment>
     </ThemeProvider>
   );
