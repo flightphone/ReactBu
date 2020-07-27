@@ -7,7 +7,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Tooltip from '@material-ui/core/Tooltip';
-import { baseUrl } from './App';
+import { baseUrl, openMap } from './App';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -29,6 +29,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Finder(props) {
     const [Descr, setDescr] = useState("Загрузка...");
+    const [load, setLoad] = useState(true);
     const visible = props.visible;
     const classes = useStyles();
     const id = props.id;
@@ -51,9 +52,19 @@ function Finder(props) {
         if (data.Error)
             setDescr(data.Error);
         else
+        {
+            let v = openMap.get(id);
+            v.data = data;
             setDescr(data.Descr);
+            setLoad (false);
+        }
     }
     
+    function renderTab()
+    {
+        return <div>{openMap.get(id).data.TotalTab[0].n_total}</div>
+    }
+
     return <div
         hidden={!visible}
     >
@@ -71,6 +82,7 @@ function Finder(props) {
                 </Toolbar>
             </AppBar>
             <div className={classes.offset} />
+                {(load)?<span></span>:renderTab()}
         </div>
     </div>
 }

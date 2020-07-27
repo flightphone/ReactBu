@@ -1,26 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
+//import logo from './logo.svg';
 import './App.css';
 import Comp, { Comp1, GetComp } from './Comp1';
 import Finder from './Finder';
 //import {treeJson} from './MenuDat';
-//dark
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
 
 import { makeStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
+//import AppBar from '@material-ui/core/AppBar';
+//import Toolbar from '@material-ui/core/Toolbar';
+//import Typography from '@material-ui/core/Typography';
+//import Button from '@material-ui/core/Button';
+//import IconButton from '@material-ui/core/IconButton';
+//import MenuIcon from '@material-ui/icons/Menu';
 import Drawer from '@material-ui/core/Drawer';
-import Container from '@material-ui/core/Container';
-import Box from '@material-ui/core/Box';
-import { sizing } from '@material-ui/system';
+//import Container from '@material-ui/core/Container';
+//import Box from '@material-ui/core/Box';
+//import { sizing } from '@material-ui/system';
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
@@ -214,4 +213,4 @@ function App(props) {
 }
 
 export default App;
-export {baseUrl};
+export {baseUrl, openMap};
