@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-//import logo from './logo.svg';
+
 import './App.css';
 import Comp, { Comp1, GetComp } from './Comp1';
 import Finder from './Finder';
@@ -10,16 +10,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 
 
 import { makeStyles } from '@material-ui/core/styles';
-//import AppBar from '@material-ui/core/AppBar';
-//import Toolbar from '@material-ui/core/Toolbar';
-//import Typography from '@material-ui/core/Typography';
-//import Button from '@material-ui/core/Button';
-//import IconButton from '@material-ui/core/IconButton';
-//import MenuIcon from '@material-ui/icons/Menu';
 import Drawer from '@material-ui/core/Drawer';
-//import Container from '@material-ui/core/Container';
-//import Box from '@material-ui/core/Box';
-//import { sizing } from '@material-ui/system';
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
@@ -50,14 +41,14 @@ function createMenuMap(tree) {
 
 let openMap = new Map();
 let startObj = {
-      Control: Comp1,
-      Params: {},
+      Control: Finder,
+      Params: "1445",
       data: {}
 }
-openMap.set("-1", startObj);
+openMap.set("839", startObj);
 
 let openIDs = [];
-openIDs.push("-1");
+openIDs.push("839");
 
 
 
@@ -78,7 +69,7 @@ function App(props) {
   );
 
   
-  const [current, Setcurrent] = useState("-1");
+  const [current, Setcurrent] = useState("839");
  
 
   function show() {
@@ -112,8 +103,8 @@ function App(props) {
   }
 
   const [loading, setLoading] = useState(true);
-  //const [treeJson, SetTree] = useState([]);
-
+  
+  
   async function getTree() {
     
     const url = baseUrl + "ustore/gettree";
@@ -127,13 +118,13 @@ function App(props) {
     );
     
     const data = await response.json();
-    //SetTree(data);
     treeJson = data;
     menuMap.clear();
     createMenuMap(treeJson);
     setLoading(false);
 
   }
+  
   const [expanded, setExpanded] = useState([]);
   const [selected, setSelected] = useState([]);
 
@@ -153,6 +144,8 @@ function App(props) {
 
 
   useEffect(() => { getTree(); }, []);
+  //menuMap.clear();
+  //createMenuMap(treeJson);
 
   const [stateDrawer, setStateDrawer] = useState(false)
 

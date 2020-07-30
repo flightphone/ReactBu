@@ -5,9 +5,11 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
 import Tooltip from '@material-ui/core/Tooltip';
 import { baseUrl, openMap } from './App';
+import DataGrid from './DataGrid';
+import MenuIcon from '@material-ui/icons/Menu';
+import FilterListIcon from '@material-ui/icons/FilterList';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -51,39 +53,42 @@ function Finder(props) {
         const data = await response.json();
         if (data.Error)
             setDescr(data.Error);
-        else
-        {
+        else {
             let v = openMap.get(id);
             v.data = data;
             setDescr(data.Descr);
-            setLoad (false);
+            setLoad(false);
         }
     }
-    
-    function renderTab()
-    {
-        return <div>{openMap.get(id).data.TotalTab[0].n_total}</div>
+
+    function renderTab() {
+        return <DataGrid columns={openMap.get(id).data.Fcols} rows={openMap.get(id).data.MainTab} show={props.show} descr={openMap.get(id).data.Descr} />
+        //return <div>{openMap.get(id).data.TotalTab[0].n_total}</div>
     }
 
     return <div
         hidden={!visible}
+        className={classes.fixheight}
     >
-        <div className={classes.root}>
-            <AppBar position="fixed">
-                <Toolbar>
-                    <Tooltip title="Меню">
-                        <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" onClick={() => { props.show(); }}>
-                            <MenuIcon />
-                        </IconButton>
-                    </Tooltip>
-                    <Typography variant="h6" className={classes.title}>
-                        {Descr}
-                    </Typography>
-                </Toolbar>
-            </AppBar>
-            <div className={classes.offset} />
-                {(load)?<span></span>:renderTab()}
-        </div>
+        <AppBar position="fixed">
+            <Toolbar>
+                <Tooltip title="Меню">
+                    <IconButton onClick={() => { props.show(); }}>
+                        <MenuIcon />
+                    </IconButton>
+                </Tooltip>
+                <Typography variant="h6" className={classes.title}>
+                    {Descr}
+                </Typography>
+                <Tooltip title="Фильтровка и сортировка">
+                    <IconButton aria-label="filter list">
+                        <FilterListIcon />
+                    </IconButton>
+                </Tooltip>
+            </Toolbar>
+        </AppBar>
+        <div className={classes.offset} />
+        {(load) ? <span></span> : renderTab()}
     </div>
 }
 
