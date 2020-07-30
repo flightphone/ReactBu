@@ -26,13 +26,9 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         marginLeft: theme.spacing(2.5),
     },
-    pag: {
-        flexGrow: 1,
-        marginLeft: theme.spacing(2.5),
-        alignContent: 'right'
-    },
+    
     menuButton: {
-        marginRight: theme.spacing(2),
+        marginRight: theme.spacing(1),
     },
     offset: theme.mixins.toolbar,
     title: {
@@ -53,7 +49,8 @@ function Finder(props) {
     const [load, setLoad] = useState(true);
     const [stateDrawer, setStateDrawer] = useState(false);
     const [page, setPage] = useState(0);
-    const [count, setCount] = useState(200);
+    const [count, setCount] = useState(0);
+    const [numupdate, setNumUpdate] = useState(0);
 
 
 
@@ -87,7 +84,7 @@ function Finder(props) {
     }
 
     function renderTab() {
-        return <DataGrid columns={openMap.get(id).data.Fcols} rows={openMap.get(id).data.MainTab} show={props.show} descr={openMap.get(id).data.Descr} />
+        return <DataGrid columns={openMap.get(id).data.Fcols} rows={openMap.get(id).data.MainTab}/>
         //return <div>{openMap.get(id).data.TotalTab[0].n_total}</div>
     }
 
@@ -102,10 +99,33 @@ function Finder(props) {
 
     const rowsPerPage = 30;
     
-    function onChangePage(event, p)
+    async function onChangePage(event, p)
     {
-        setPage(p);
-        setStateDrawer(false);
+        
+        const url = baseUrl + "React/FinderStart?id=" + IdDeclare + "&mode=data&page=" + (p+1).toString();
+        const response = await fetch(url,
+            {
+                method: 'GET', // *GET, POST, PUT, DELETE, etc.
+                mode: 'cors', // no-cors, *cors, same-origin
+                cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: 'omit' // include, *same-origin, omit
+            }
+        );
+        const data = await response.json();
+        if (data.Error)
+        {
+            setDescr(data.Error);
+            setStateDrawer(false);
+        }
+        else {
+            let v = openMap.get(id);
+            v.data.MainTab = data.MainTab;
+            setPage(p);
+            setStateDrawer(false);
+            //setNumUpdate(numupdate + 1);
+            
+        }    
+        
     }
 
     const handleFirstPageButtonClick = (event) => {
@@ -174,7 +194,7 @@ function Finder(props) {
                         {Descr}
                     </Typography>
                     <Tooltip title="Фильтровка и сортировка">
-                        <IconButton aria-label="filter list">
+                        <IconButton>
                             <FilterListIcon />
                         </IconButton>
                     </Tooltip>
