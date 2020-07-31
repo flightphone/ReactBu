@@ -10,6 +10,7 @@ import Drawer from '@material-ui/core/Drawer';
 
 import { baseUrl, openMap } from './App';
 import DataGrid from './DataGrid';
+import DataFilter from './DataFilter';
 
 import MenuIcon from '@material-ui/icons/Menu';
 import FilterListIcon from '@material-ui/icons/FilterList';
@@ -18,6 +19,8 @@ import FirstPageIcon from '@material-ui/icons/FirstPage';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
+import CheckIcon from '@material-ui/icons/Check';
+import ClearIcon from '@material-ui/icons/Clear';
 
 
 
@@ -50,7 +53,8 @@ function Finder(props) {
     const [stateDrawer, setStateDrawer] = useState(false);
     const [page, setPage] = useState(0);
     const [count, setCount] = useState(0);
-    const [numupdate, setNumUpdate] = useState(0);
+    const [mode, setMode] = useState("grid");
+
 
 
 
@@ -89,7 +93,9 @@ function Finder(props) {
     }
 
 
-
+    function renderFilter(){
+        return <DataFilter columns={openMap.get(id).data.Fcols} />
+    }
 
     const toggleDrawer = (open) => (event) => {
 
@@ -144,6 +150,11 @@ function Finder(props) {
         onChangePage(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
       };
 
+      function setFilter()
+      {
+          setMode("grid");
+          //alert(openMap.get(id).data.Fcols[2].FindString);
+      }
 
     return (
     <React.Fragment>
@@ -183,6 +194,10 @@ function Finder(props) {
             hidden={!visible}
             className={classes.fixheight}
         >
+            <div
+            hidden={mode!="grid"}
+            className={classes.fixheight}
+            >
             <AppBar position="fixed">
                 <Toolbar>
                     <Tooltip title="Меню">
@@ -193,11 +208,11 @@ function Finder(props) {
                     <Typography variant="h6" className={classes.title}>
                         {Descr}
                     </Typography>
-                    <Tooltip title="Фильтровка и сортировка">
-                        <IconButton>
+                    
+                        <IconButton onClick={() => { setMode("filter"); }}>
                             <FilterListIcon />
                         </IconButton>
-                    </Tooltip>
+                    
                     <Tooltip title="Страницы">
                         <IconButton onClick={() => { setStateDrawer(true); }}>
                             <CodeIcon />
@@ -207,6 +222,32 @@ function Finder(props) {
             </AppBar>
             <div className={classes.offset} />
             {(load) ? <span></span> : renderTab()}
+            </div>
+
+            <div
+            hidden={mode!="filter"}
+            className={classes.fixheight}
+            >
+            <AppBar position="fixed">
+                <Toolbar>
+                    <Typography variant="h6" className={classes.title}>
+                        {Descr} (фильтровка и сортировка)
+                    </Typography>
+                    
+                        <IconButton onClick={() => { setFilter(); }}>
+                            <CheckIcon />
+                        </IconButton>
+                    
+                    
+                        <IconButton onClick={() => { setMode("grid"); }}>
+                            <ClearIcon />
+                        </IconButton>
+                    
+                </Toolbar>
+            </AppBar>
+            <div className={classes.offset} />
+            {(load) ? <span></span> : renderFilter()}
+            </div>
         </div>
     </React.Fragment>);
 }

@@ -107,7 +107,7 @@ function Comp(props) {
 
 
   function handleChange(event) {
-    var a = event.target.value;
+    let a = event.target.value;
     setTxt(a);
     p.text = a;
   }
