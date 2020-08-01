@@ -14,18 +14,29 @@ import Drawer from '@material-ui/core/Drawer';
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import TreeItem from '@material-ui/lab/TreeItem';
+import IconButton from '@material-ui/core/IconButton';
 
 let treeJson = [];
+let showMainMenu = false;
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
     marginRight: 20,
     marginLeft: 5
-    
+
   },
-});
+  drawerHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(0, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+    justifyContent: 'flex-end',
+  },
+}));
 
 const baseUrl = "http://127.0.0.1:5000/";
 
@@ -41,9 +52,9 @@ function createMenuMap(tree) {
 
 let openMap = new Map();
 let startObj = {
-      Control: Finder,
-      Params: "1445",
-      data: {}
+  Control: Finder,
+  Params: "1445",
+  data: {}
 }
 openMap.set("839", startObj);
 
@@ -68,45 +79,44 @@ function App(props) {
     [prefersDarkMode],
   );
 
-  
+
   const [current, Setcurrent] = useState("839");
- 
+
 
   function show() {
+    showMainMenu = true;
     setStateDrawer(true);
   }
 
-  function getForm(id)
-  {
+  function getForm(id) {
     let p = menuMap.get(id);
-    let control = (p.params)?Finder:Comp1;
+    let control = (p.params) ? Finder : Comp1;
     let params = p.params;
     return {
-      Conrol : control,
-      Params : params
+      Conrol: control,
+      Params: params
     }
   }
 
   function open(id) {
-      if (openMap.get(id)==null)
-      {
-         let c = getForm(id);
-         let obj = {
-           Control : c.Conrol,
-           Params  : c.Params,
-           data : {}
-         } 
-         openMap.set(id, obj);
-         openIDs.push(id);
-      }  
-      Setcurrent(id);
+    if (openMap.get(id) == null) {
+      let c = getForm(id);
+      let obj = {
+        Control: c.Conrol,
+        Params: c.Params,
+        data: {}
+      }
+      openMap.set(id, obj);
+      openIDs.push(id);
+    }
+    Setcurrent(id);
   }
 
   const [loading, setLoading] = useState(true);
-  
-  
+
+
   async function getTree() {
-    
+
     const url = baseUrl + "ustore/gettree";
     const response = await fetch(url,
       {
@@ -116,7 +126,7 @@ function App(props) {
         credentials: 'omit' // include, *same-origin, omit
       }
     );
-    
+
     const data = await response.json();
     treeJson = data;
     menuMap.clear();
@@ -124,21 +134,26 @@ function App(props) {
     setLoading(false);
 
   }
-  
-  const [expanded, setExpanded] = useState([]);
-  const [selected, setSelected] = useState([]);
+
+  //const [expanded, setExpanded] = useState([]);
+  //const [selected, setSelected] = useState([]);
 
   const handleToggle = (event, nodeIds) => {
-    setExpanded(nodeIds);
+    //setExpanded(nodeIds);
+    /*
+                  expanded={expanded}
+                  selected={selected}
+                  onNodeToggle={handleToggle}
+    */
   };
 
   const handleSelect = (event, nodeIds) => {
-    setSelected(nodeIds);
+    //setSelected(nodeIds);
     if (menuMap.get(nodeIds)) {
       setStateDrawer(false);
-
+      showMainMenu = false;
       open(nodeIds);
-
+      
     }
   };
 
@@ -149,24 +164,25 @@ function App(props) {
 
   const [stateDrawer, setStateDrawer] = useState(false)
 
-
+/*
   const toggleDrawer = (open) => (event) => {
-    
-    setStateDrawer(open);
+
+    //setStateDrawer(open);
+    //onClose={toggleDrawer(false)}
+    //variant="persistent"
 
   };
-
+*/
   const renderTree = (nodes) => (
     <TreeItem key={nodes.id} nodeId={nodes.id} label={nodes.text}>
       {Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node)) : null}
     </TreeItem>
   );
 
-  function rendItem(id)
-  {
+  function rendItem(id) {
     let value = openMap.get(id);
     let Cm = value.Control;
-    return <Cm visible={(current == id)} show={show} params={value.Params} id = {id}/>
+    return <Cm visible={(current == id)} show={show} params={value.Params} id={id} />
   }
 
   return (
@@ -175,17 +191,19 @@ function App(props) {
 
       <React.Fragment>
 
-        <Drawer anchor="left" open={stateDrawer} onClose={toggleDrawer(false)}>
-          <div>
+        <Drawer anchor="left" open={stateDrawer} variant="persistent">
+          <div className={classes.drawerHeader}>
+            <IconButton onClick={(event)=>{setStateDrawer(false); showMainMenu = false;}}>
+              <ChevronLeftIcon />
+            </IconButton>
+          </div>
+          
             {
               (loading) ? <p><em>Загрузка...</em></p> :
                 <TreeView
                   className={classes.root}
                   defaultCollapseIcon={<ExpandMoreIcon />}
                   defaultExpandIcon={<ChevronRightIcon />}
-                  expanded={expanded}
-                  selected={selected}
-                  onNodeToggle={handleToggle}
                   onNodeSelect={handleSelect}
                 >
                   {
@@ -193,17 +211,18 @@ function App(props) {
                   }
                 </TreeView>
             }
-          </div>
+          
+
         </Drawer>
-          {
-            openIDs.map((id)=>(
-              rendItem(id)
-            ))
-          }     
+        {
+          openIDs.map((id) => (
+            rendItem(id)
+          ))
+        }
       </React.Fragment>
     </ThemeProvider>
   );
 }
 
 export default App;
-export {baseUrl, openMap};
+export { baseUrl, openMap, showMainMenu };

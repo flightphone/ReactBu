@@ -8,7 +8,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Drawer from '@material-ui/core/Drawer';
 
 
-import { baseUrl, openMap } from './App';
+import { baseUrl, openMap, showMainMenu } from './App';
 import DataGrid from './DataGrid';
 import DataFilter from './DataFilter';
 
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         marginLeft: theme.spacing(2.5),
     },
-    
+
     menuButton: {
         marginRight: theme.spacing(1),
     },
@@ -65,7 +65,7 @@ function Finder(props) {
     useEffect(() => { getData(); }, []);
 
     async function getData() {
-
+        
         const url = baseUrl + "React/FinderStart?id=" + IdDeclare;
         const response = await fetch(url,
             {
@@ -88,13 +88,18 @@ function Finder(props) {
     }
 
     function renderTab() {
-        return <DataGrid columns={openMap.get(id).data.Fcols} rows={openMap.get(id).data.MainTab}/>
+        if (visible) {
+            return <DataGrid columns={openMap.get(id).data.Fcols} rows={openMap.get(id).data.MainTab} />
+        }
         //return <div>{openMap.get(id).data.TotalTab[0].n_total}</div>
     }
 
 
-    function renderFilter(){
-        return <DataFilter columns={openMap.get(id).data.Fcols} />
+    function renderFilter() {
+        if (visible)
+        {
+            return <DataFilter columns={openMap.get(id).data.Fcols} />
+        }
     }
 
     const toggleDrawer = (open) => (event) => {
@@ -104,11 +109,10 @@ function Finder(props) {
     };
 
     const rowsPerPage = 30;
-    
-    async function onChangePage(event, p)
-    {
-        
-        const url = baseUrl + "React/FinderStart?id=" + IdDeclare + "&mode=data&page=" + (p+1).toString();
+
+    async function onChangePage(event, p) {
+
+        const url = baseUrl + "React/FinderStart?id=" + IdDeclare + "&mode=data&page=" + (p + 1).toString();
         const response = await fetch(url,
             {
                 method: 'GET', // *GET, POST, PUT, DELETE, etc.
@@ -118,8 +122,7 @@ function Finder(props) {
             }
         );
         const data = await response.json();
-        if (data.Error)
-        {
+        if (data.Error) {
             setDescr(data.Error);
             setStateDrawer(false);
         }
@@ -129,127 +132,126 @@ function Finder(props) {
             setPage(p);
             setStateDrawer(false);
             //setNumUpdate(numupdate + 1);
-            
-        }    
-        
+
+        }
+
     }
 
     const handleFirstPageButtonClick = (event) => {
         onChangePage(event, 0);
-      };
-    
-      const handleBackButtonClick = (event) => {
-        onChangePage(event, page - 1);
-      };
-    
-      const handleNextButtonClick = (event) => {
-        onChangePage(event, page + 1);
-      };
-    
-      const handleLastPageButtonClick = (event) => {
-        onChangePage(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-      };
+    };
 
-      function setFilter()
-      {
-          setMode("grid");
-          //alert(openMap.get(id).data.Fcols[2].FindString);
-      }
+    const handleBackButtonClick = (event) => {
+        onChangePage(event, page - 1);
+    };
+
+    const handleNextButtonClick = (event) => {
+        onChangePage(event, page + 1);
+    };
+
+    const handleLastPageButtonClick = (event) => {
+        onChangePage(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+    };
+
+    function setFilter() {
+        setMode("grid");
+        //alert(openMap.get(id).data.Fcols[2].FindString);
+    }
 
     return (
-    <React.Fragment>
-        <Drawer anchor="top" open={stateDrawer} onClose={toggleDrawer(false)}>
-        <Toolbar>
-                <Typography className={classes.title}>
-                    {page * rowsPerPage + 1} - {Math.min((page+1)*rowsPerPage, count)} из {count}
-                </Typography>
-                <IconButton
-                    onClick={handleFirstPageButtonClick}
-                    disabled={page === 0}
-                    aria-label="first page"
-                >
-                    <FirstPageIcon />
-                </IconButton>
-                <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
-                    <KeyboardArrowLeft />
-                </IconButton>
-                {page + 1} из {Math.max(0, Math.ceil(count / rowsPerPage) - 1) + 1}
-                <IconButton
-                    onClick={handleNextButtonClick}
-                    disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-                    aria-label="next page"
-                >
-                    <KeyboardArrowRight />
-                </IconButton>
-                <IconButton
-                    onClick={handleLastPageButtonClick}
-                    disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-                    aria-label="last page"
-                >
-                    <LastPageIcon />
-                </IconButton>
-            </Toolbar>
-        </Drawer>
-        <div
-            hidden={!visible}
-            className={classes.fixheight}
-        >
-            <div
-            hidden={mode!="grid"}
-            className={classes.fixheight}
-            >
-            <AppBar position="fixed">
+        <React.Fragment>
+            <Drawer anchor="top" open={stateDrawer} onClose={toggleDrawer(false)}>
                 <Toolbar>
-                    <Tooltip title="Меню">
-                        <IconButton onClick={() => { props.show(); }}>
-                            <MenuIcon />
-                        </IconButton>
-                    </Tooltip>
-                    <Typography variant="h6" className={classes.title}>
-                        {Descr}
+                    <Typography className={classes.title}>
+                        {page * rowsPerPage + 1} - {Math.min((page + 1) * rowsPerPage, count)} из {count}
                     </Typography>
-                    
-                        <IconButton onClick={() => { setMode("filter"); }}>
-                            <FilterListIcon />
-                        </IconButton>
-                    
-                    <Tooltip title="Страницы">
-                        <IconButton onClick={() => { setStateDrawer(true); }}>
-                            <CodeIcon />
-                        </IconButton>
-                    </Tooltip>
+                    <IconButton
+                        onClick={handleFirstPageButtonClick}
+                        disabled={page === 0}
+                        aria-label="first page"
+                    >
+                        <FirstPageIcon />
+                    </IconButton>
+                    <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
+                        <KeyboardArrowLeft />
+                    </IconButton>
+                    {page + 1} из {Math.max(0, Math.ceil(count / rowsPerPage) - 1) + 1}
+                    <IconButton
+                        onClick={handleNextButtonClick}
+                        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+                        aria-label="next page"
+                    >
+                        <KeyboardArrowRight />
+                    </IconButton>
+                    <IconButton
+                        onClick={handleLastPageButtonClick}
+                        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+                        aria-label="last page"
+                    >
+                        <LastPageIcon />
+                    </IconButton>
                 </Toolbar>
-            </AppBar>
-            <div className={classes.offset} />
-            {(load) ? <span></span> : renderTab()}
-            </div>
+            </Drawer>
+            <div
+                hidden={!visible}
+                className={classes.fixheight}
+            >
+                <div
+                    hidden={mode != "grid"}
+                    className={classes.fixheight}
+                >
+                    <AppBar position="fixed">
+                        <Toolbar>
+                            <Tooltip title="Меню">
+                                <IconButton onClick={() => { props.show(); }}>
+                                    <MenuIcon />
+                                </IconButton>
+                            </Tooltip>
+                            <Typography variant="h6" className={classes.title}>
+                                {Descr}
+                            </Typography>
 
-            <div
-            hidden={mode!="filter"}
-            className={classes.fixheight}
-            >
-            <AppBar position="fixed">
-                <Toolbar>
-                    <Typography variant="h6" className={classes.title}>
-                        {Descr} (фильтровка и сортировка)
+                            <IconButton onClick={() => { setMode("filter"); }}>
+                                <FilterListIcon />
+                            </IconButton>
+
+                            <Tooltip title="Страницы">
+                                <IconButton onClick={() => { setStateDrawer(true); }}>
+                                    <CodeIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </Toolbar>
+                    </AppBar>
+                    <div className={classes.offset} />
+                    {(load) ? <span></span> : renderTab()}
+                </div>
+
+                <div
+                    hidden={mode != "filter"}
+                    className={classes.fixheight}
+                >
+                    <AppBar position="fixed">
+                        <Toolbar>
+                            <Typography variant="h6" className={classes.title}>
+                                {Descr} (фильтровка и сортировка)
                     </Typography>
-                    
-                        <IconButton onClick={() => { setFilter(); }}>
-                            <CheckIcon />
-                        </IconButton>
-                    
-                    
-                        <IconButton onClick={() => { setMode("grid"); }}>
-                            <ClearIcon />
-                        </IconButton>
-                    
-                </Toolbar>
-            </AppBar>
-            <div className={classes.offset} />
-            {(load) ? <span></span> : renderFilter()}
+
+                            <IconButton onClick={() => { setFilter(); }}>
+                                <CheckIcon />
+                            </IconButton>
+
+
+                            <IconButton onClick={() => { setMode("grid"); }}>
+                                <ClearIcon />
+                            </IconButton>
+
+                        </Toolbar>
+                    </AppBar>
+                    <div className={classes.offset} />
+                    {(load) ? <span></span> : renderFilter()}
+                </div>
             </div>
-        </div>
-    </React.Fragment>);
+        </React.Fragment>);
 }
 
 export default Finder;
