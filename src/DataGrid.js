@@ -69,7 +69,7 @@ export default function DataGrid(par) {
             <TableCell
               key={column.FieldName}
               align={(column.DisplayFormat.indexOf('#') > -1) ? "right" : "left"}
-              style={{ fontSize: 12, maxWidth: 300 }}
+              style={{ fontSize: 14, maxWidth: 300 }}
             >
               {column.FieldCaption}
             </TableCell>
@@ -90,7 +90,7 @@ export default function DataGrid(par) {
                 return (
                   <TableCell key={column.FieldName}
                     align={(column.DisplayFormat.indexOf('#') > -1) ? "right" : "left"}
-                    style={{ fontSize: 12, maxWidth: 300 }}
+                    style={{ fontSize: 14, maxWidth: 300 }}
                   >
                     {(column.DisplayFormat == "") ? value : dateformat(value, column.DisplayFormat)}
                   </TableCell>

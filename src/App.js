@@ -19,7 +19,7 @@ import TreeItem from '@material-ui/lab/TreeItem';
 import IconButton from '@material-ui/core/IconButton';
 
 let treeJson = [];
-let showMainMenu = false;
+let mainObj = {};
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,13 +62,10 @@ let openIDs = [];
 openIDs.push("839");
 
 
-
+//===========================================Application================================
 function App(props) {
   const classes = useStyles();
-
-  //dark
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-
   const theme = React.useMemo(
     () =>
       createMuiTheme({
@@ -78,13 +75,12 @@ function App(props) {
       }),
     [prefersDarkMode],
   );
-
-
+  const [loading, setLoading] = useState(true);
   const [current, Setcurrent] = useState("839");
-
+  const [stateDrawer, setStateDrawer] = useState(false);
+  useEffect(() => { getTree(); }, []);
 
   function show() {
-    showMainMenu = true;
     setStateDrawer(true);
   }
 
@@ -112,9 +108,6 @@ function App(props) {
     Setcurrent(id);
   }
 
-  const [loading, setLoading] = useState(true);
-
-
   async function getTree() {
 
     const url = baseUrl + "ustore/gettree";
@@ -135,44 +128,14 @@ function App(props) {
 
   }
 
-  //const [expanded, setExpanded] = useState([]);
-  //const [selected, setSelected] = useState([]);
-
-  const handleToggle = (event, nodeIds) => {
-    //setExpanded(nodeIds);
-    /*
-                  expanded={expanded}
-                  selected={selected}
-                  onNodeToggle={handleToggle}
-    */
-  };
 
   const handleSelect = (event, nodeIds) => {
-    //setSelected(nodeIds);
     if (menuMap.get(nodeIds)) {
       setStateDrawer(false);
-      showMainMenu = false;
       open(nodeIds);
-      
     }
   };
 
-
-  useEffect(() => { getTree(); }, []);
-  //menuMap.clear();
-  //createMenuMap(treeJson);
-
-  const [stateDrawer, setStateDrawer] = useState(false)
-
-/*
-  const toggleDrawer = (open) => (event) => {
-
-    //setStateDrawer(open);
-    //onClose={toggleDrawer(false)}
-    //variant="persistent"
-
-  };
-*/
   const renderTree = (nodes) => (
     <TreeItem key={nodes.id} nodeId={nodes.id} label={nodes.text}>
       {Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node)) : null}
@@ -182,18 +145,19 @@ function App(props) {
   function rendItem(id) {
     let value = openMap.get(id);
     let Cm = value.Control;
-    return <Cm visible={(current == id)} show={show} params={value.Params} id={id} />
+    return <Cm visible={(current == id)} params={value.Params} id={id} />
   }
+  //Передаем фунцию через глобальный объект
+  mainObj.showMenu = show;
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
 
       <React.Fragment>
-
         <Drawer anchor="left" open={stateDrawer} variant="persistent">
           <div className={classes.drawerHeader}>
-            <IconButton onClick={(event)=>{setStateDrawer(false); showMainMenu = false;}}>
+            <IconButton onClick={(event)=>{setStateDrawer(false); }}>
               <ChevronLeftIcon />
             </IconButton>
           </div>
@@ -211,8 +175,6 @@ function App(props) {
                   }
                 </TreeView>
             }
-          
-
         </Drawer>
         {
           openIDs.map((id) => (
@@ -225,4 +187,4 @@ function App(props) {
 }
 
 export default App;
-export { baseUrl, openMap, showMainMenu };
+export { baseUrl, openMap, mainObj };

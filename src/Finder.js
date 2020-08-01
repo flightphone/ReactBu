@@ -8,7 +8,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Drawer from '@material-ui/core/Drawer';
 
 
-import { baseUrl, openMap, showMainMenu } from './App';
+import { baseUrl, openMap, mainObj } from './App';
 import DataGrid from './DataGrid';
 import DataFilter from './DataFilter';
 
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
     },
 
     menuButton: {
-        marginRight: theme.spacing(1),
+        marginRight: theme.spacing(2),
     },
     offset: theme.mixins.toolbar,
     title: {
@@ -91,7 +91,7 @@ function Finder(props) {
         if (visible) {
             return <DataGrid columns={openMap.get(id).data.Fcols} rows={openMap.get(id).data.MainTab} />
         }
-        //return <div>{openMap.get(id).data.TotalTab[0].n_total}</div>
+        
     }
 
 
@@ -103,15 +103,12 @@ function Finder(props) {
     }
 
     const toggleDrawer = (open) => (event) => {
-
         setStateDrawer(open);
-
     };
 
     const rowsPerPage = 30;
 
     async function onChangePage(event, p) {
-
         const url = baseUrl + "React/FinderStart?id=" + IdDeclare + "&mode=data&page=" + (p + 1).toString();
         const response = await fetch(url,
             {
@@ -131,10 +128,7 @@ function Finder(props) {
             v.data.MainTab = data.MainTab;
             setPage(p);
             setStateDrawer(false);
-            //setNumUpdate(numupdate + 1);
-
         }
-
     }
 
     const handleFirstPageButtonClick = (event) => {
@@ -155,7 +149,6 @@ function Finder(props) {
 
     function setFilter() {
         setMode("grid");
-        //alert(openMap.get(id).data.Fcols[2].FindString);
     }
 
     return (
@@ -203,7 +196,7 @@ function Finder(props) {
                     <AppBar position="fixed">
                         <Toolbar>
                             <Tooltip title="Меню">
-                                <IconButton onClick={() => { props.show(); }}>
+                                <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" onClick={() => { mainObj.showMenu(); }}>
                                     <MenuIcon />
                                 </IconButton>
                             </Tooltip>

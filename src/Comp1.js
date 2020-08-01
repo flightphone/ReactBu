@@ -10,6 +10,8 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Tooltip from '@material-ui/core/Tooltip';
 
+import { baseUrl, openMap, mainObj } from './App';
+
 class Fin {
   items = [];
   text = "";
@@ -68,7 +70,7 @@ function Comp1(props) {
       <AppBar position="fixed">
         <Toolbar>
           <Tooltip title="Меню">
-            <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" onClick={() => { props.show(); }}>
+            <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" onClick={() => { mainObj.showMenu(); }}>
               <MenuIcon />
             </IconButton>
           </Tooltip>
