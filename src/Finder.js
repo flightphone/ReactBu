@@ -48,24 +48,62 @@ function Finder(props) {
     const classes = useStyles();
 
 
-    const [Descr, setDescr] = useState("Загрузка...");
+    //const [Descr, setDescr] = useState("Загрузка...");
     const [load, setLoad] = useState(true);
     const [stateDrawer, setStateDrawer] = useState(false);
-    const [page, setPage] = useState(0);
-    const [count, setCount] = useState(0);
+    //const [page, setPage] = useState(0);
+    //const [count, setCount] = useState(0);
     const [mode, setMode] = useState("grid");
 
+    const [current, setCurrent] = useState(-1);
 
+    /*
+    const [current, setCurrent] = useState(-1);
+    function handleCurrent(r) {
+        setCurrent(r);
+    }
+    */
+    //Достаточно просто вызвать setCurrent, что бы запустить процесс отрисовки всего компонента
+    //openMap.get(props.id).data.setCurrent = handleCurrent;
+
+
+
+
+    //let Descr = "Загрузка...";
+    //let count = 0;
+    //let page = 0;
 
 
     const visible = props.visible;
     const id = props.id;
     const IdDeclare = props.params;
 
+
+    function Descr() {
+        if (openMap.get(id).data.Descr)
+            return openMap.get(id).data.Descr;
+        else
+            return ("Загрузка...");
+    }
+
+    function count() {
+        if (openMap.get(id).data.TotalTab)
+            return openMap.get(id).data.TotalTab[0].n_total;
+        else
+            return 0;
+    }
+
+    function page() {
+        if (openMap.get(id).data.page)
+            return (openMap.get(id).data.page - 1);
+        else
+            return 0;
+    }
+
     useEffect(() => { getData(); }, []);
 
     async function getData() {
-        
+
         const url = baseUrl + "React/FinderStart?id=" + IdDeclare;
         const response = await fetch(url,
             {
@@ -76,29 +114,34 @@ function Finder(props) {
             }
         );
         const data = await response.json();
-        if (data.Error)
-            setDescr(data.Error);
+        if (data.Error) {
+            openMap.get(id).data.Descr = data.Error;
+            setCurrent(current + 1);
+        }
         else {
             let v = openMap.get(id);
             v.data = data;
-            setDescr(data.Descr);
-            setCount(data.TotalTab[0].n_total);
+            //Descr = data.Descr;
+            //count = data.TotalTab[0].n_total;
             setLoad(false);
+
+            //openMap.get(props.id).data.setCurrent = handleCurrent;
+            //Для запуска перерисовки
+            //v.data.setCurrent = handleCurrent;
         }
     }
 
     function renderTab() {
         if (visible) {
             //alert(IdDeclare);
-            return <DataGrid columns={openMap.get(id).data.Fcols} rows={openMap.get(id).data.MainTab} id = {id}/>
+            return <DataGrid columns={openMap.get(id).data.Fcols} rows={openMap.get(id).data.MainTab} id={id} />
         }
-        
+
     }
 
 
     function renderFilter() {
-        if (visible)
-        {
+        if (visible) {
             return <DataFilter columns={openMap.get(id).data.Fcols} />
         }
     }
@@ -121,13 +164,13 @@ function Finder(props) {
         );
         const data = await response.json();
         if (data.Error) {
-            setDescr(data.Error);
+            openMap.get(id).data.Descr = data.Error;
             setStateDrawer(false);
         }
         else {
             let v = openMap.get(id);
             v.data.MainTab = data.MainTab;
-            setPage(p);
+            v.data.page = p + 1;
             setStateDrawer(false);
         }
     }
@@ -137,15 +180,15 @@ function Finder(props) {
     };
 
     const handleBackButtonClick = (event) => {
-        onChangePage(event, page - 1);
+        onChangePage(event, page() - 1);
     };
 
     const handleNextButtonClick = (event) => {
-        onChangePage(event, page + 1);
+        onChangePage(event, page() + 1);
     };
 
     const handleLastPageButtonClick = (event) => {
-        onChangePage(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+        onChangePage(event, Math.max(0, Math.ceil(count() / rowsPerPage) - 1));
     };
 
     function setFilter() {
@@ -161,11 +204,11 @@ function Finder(props) {
             <Drawer anchor="top" open={stateDrawer} onClose={toggleDrawer(false)}>
                 <Toolbar>
                     <Typography className={classes.title}>
-                        {page * rowsPerPage + 1} - {Math.min((page + 1) * rowsPerPage, count)} из {count}
+                        {page() * rowsPerPage + 1} - {Math.min((page() + 1) * rowsPerPage, count())} из {count()}
                     </Typography>
                     <IconButton
                         onClick={handleFirstPageButtonClick}
-                        disabled={page === 0}
+                        disabled={page() === 0}
                         aria-label="first page"
                     >
                         <FirstPageIcon />
@@ -173,17 +216,17 @@ function Finder(props) {
                     <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
                         <KeyboardArrowLeft />
                     </IconButton>
-                    {page + 1} из {Math.max(0, Math.ceil(count / rowsPerPage) - 1) + 1}
+                    {page() + 1} из {Math.max(0, Math.ceil(count() / rowsPerPage) - 1) + 1}
                     <IconButton
                         onClick={handleNextButtonClick}
-                        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+                        disabled={page() >= Math.ceil(count() / rowsPerPage) - 1}
                         aria-label="next page"
                     >
                         <KeyboardArrowRight />
                     </IconButton>
                     <IconButton
                         onClick={handleLastPageButtonClick}
-                        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+                        disabled={page() >= Math.ceil(count() / rowsPerPage) - 1}
                         aria-label="last page"
                     >
                         <LastPageIcon />
@@ -206,7 +249,7 @@ function Finder(props) {
                                 </IconButton>
                             </Tooltip>
                             <Typography variant="h6" className={classes.title}>
-                                {Descr}
+                                {Descr()}
                             </Typography>
 
                             <IconButton onClick={() => { setMode("filter"); }}>
@@ -232,7 +275,7 @@ function Finder(props) {
                     <AppBar position="fixed">
                         <Toolbar>
                             <Typography variant="h6" className={classes.title}>
-                                {Descr} (фильтровка и сортировка)
+                                {Descr()} (фильтровка и сортировка)
                     </Typography>
 
                             <IconButton onClick={() => { setFilter(); }}>

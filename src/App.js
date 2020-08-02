@@ -158,24 +158,24 @@ function App(props) {
       <React.Fragment>
         <Drawer anchor="left" open={stateDrawer} variant="persistent">
           <div className={classes.drawerHeader}>
-            <IconButton onClick={(event)=>{setStateDrawer(false); }}>
+            <IconButton onClick={(event) => { setStateDrawer(false); }}>
               <ChevronLeftIcon />
             </IconButton>
           </div>
-          
-            {
-              (loading) ? <p><em>Загрузка...</em></p> :
-                <TreeView
-                  className={classes.root}
-                  defaultCollapseIcon={<ExpandMoreIcon />}
-                  defaultExpandIcon={<ChevronRightIcon />}
-                  onNodeSelect={handleSelect}
-                >
-                  {
-                    treeJson.map((node) => renderTree(node))
-                  }
-                </TreeView>
-            }
+
+          {
+            (loading) ? <p><em>Загрузка...</em></p> :
+              <TreeView
+                className={classes.root}
+                defaultCollapseIcon={<ExpandMoreIcon />}
+                defaultExpandIcon={<ChevronRightIcon />}
+                onNodeSelect={handleSelect}
+              >
+                {
+                  treeJson.map((node) => renderTree(node))
+                }
+              </TreeView>
+          }
         </Drawer>
         {
           openIDs.map((id) => (

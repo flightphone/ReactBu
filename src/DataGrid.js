@@ -60,8 +60,7 @@ export default function DataGrid(par) {
 
   const handleClick = (event, index) => {
     openMap.get(par.id).data.curRow = index;
-    if (openMap.get(par.id).data.setCurrent!=null)
-    {
+    if (openMap.get(par.id).data.setCurrent != null) {
       openMap.get(par.id).data.setCurrent(index);
     }
     setCurrent(index);
