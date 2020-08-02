@@ -5,6 +5,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import { openMap } from './App';
 
 
 function dateformat(d, f) {
@@ -53,10 +54,16 @@ const useStyles = makeStyles({
 
 export default function DataGrid(par) {
   const classes = useStyles();
-  const [current, setCurrent] = useState(-1);
+  let initc = (openMap.get(par.id).data.curRow) ? openMap.get(par.id).data.curRow : -1;
+  const [current, setCurrent] = useState(initc);
 
 
   const handleClick = (event, index) => {
+    openMap.get(par.id).data.curRow = index;
+    if (openMap.get(par.id).data.setCurrent!=null)
+    {
+      openMap.get(par.id).data.setCurrent(index);
+    }
     setCurrent(index);
   };
 
@@ -83,7 +90,7 @@ export default function DataGrid(par) {
               hover
               selected={(index == current)}
               onClick={(event) => handleClick(event, index)}
-              
+
             >
               {par.columns.map((column) => {
                 const value = row[column.FieldName];

@@ -89,7 +89,8 @@ function Finder(props) {
 
     function renderTab() {
         if (visible) {
-            return <DataGrid columns={openMap.get(id).data.Fcols} rows={openMap.get(id).data.MainTab} />
+            //alert(IdDeclare);
+            return <DataGrid columns={openMap.get(id).data.Fcols} rows={openMap.get(id).data.MainTab} id = {id}/>
         }
         
     }
@@ -151,6 +152,10 @@ function Finder(props) {
         setMode("grid");
     }
 
+    const addinit = () => {
+        if (props.addinit && !load)
+            return (props.addinit());
+    }
     return (
         <React.Fragment>
             <Drawer anchor="top" open={stateDrawer} onClose={toggleDrawer(false)}>
@@ -213,6 +218,7 @@ function Finder(props) {
                                     <CodeIcon />
                                 </IconButton>
                             </Tooltip>
+                            {addinit()}
                         </Toolbar>
                     </AppBar>
                     <div className={classes.offset} />

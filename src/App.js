@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import Comp, { Comp1, GetComp } from './Comp1';
 import Finder from './Finder';
+import Dogovors from './ext/Dogovors';
 //import {treeJson} from './MenuDat';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
@@ -52,7 +53,7 @@ function createMenuMap(tree) {
 
 let openMap = new Map();
 let startObj = {
-  Control: Finder,
+  Control: Dogovors,
   Params: "1445",
   data: {}
 }
@@ -145,7 +146,7 @@ function App(props) {
   function rendItem(id) {
     let value = openMap.get(id);
     let Cm = value.Control;
-    return <Cm visible={(current == id)} params={value.Params} id={id} />
+    return <Cm visible={(current == id)} params={value.Params} id={id} key={id} />
   }
   //Передаем фунцию через глобальный объект
   mainObj.showMenu = show;
