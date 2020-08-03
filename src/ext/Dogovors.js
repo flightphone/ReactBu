@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import Tooltip from '@material-ui/core/Tooltip';
-import { baseUrl, openMap, mainObj } from '../App';
+import { baseUrl, openMap } from '../App';
+import { makeStyles } from '@material-ui/core/styles';
 import Finder from '../Finder';
 import AttachmentIcon from '@material-ui/icons/Attachment';
 
+const useStyles = makeStyles((theme) => ({
+    menuButton: {
+        marginRight: theme.spacing(2),
+    },
+}));
+
 function Dogovors(props) {
     //let initc = (openMap.get(props.id).data.curRow) ? openMap.get(props.id).data.curRow : 0;
-
+    const classes = useStyles();
     const [current, setCurrent] = useState(-1);
     function handleCurrent(r) {
         //alert('a');
@@ -33,7 +40,7 @@ function Dogovors(props) {
 
         return (
             <Tooltip title="Файлы">
-                <a href={fileUrl} target="_blanck">
+                <a href={fileUrl} target="_blanck" className={classes.menuButton}>
                     <AttachmentIcon style={{ color: "white" }} />
                 </a>
             </Tooltip>

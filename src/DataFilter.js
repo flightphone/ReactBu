@@ -3,36 +3,37 @@ import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
-//import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
-import NativeSelect from '@material-ui/core/NativeSelect';
 
-export default function DataGrid(par) {
-    //const classes = useStyles();
-    //const [columns, setColumns] = useState(par.columns);
+
+export default function DataFilter(par) {
     const [action, setAction] = useState(0);
     function textChange(event, index) {
         par.columns[index].FindString = event.target.value;
-        /*
-        let a = [];
-        par.columns.map((column)=>{
-            a.push(column)
-        });
-        setColumns(a);
-        */
-        //Для перерисовки
         setAction(action + 1);
     }
 
+    function sortChange(event, index) {
+        let rang = 0;
+
+        par.columns.map((column, i)=>{
+            if (i!=index && column.SortOrder)    
+                if (column.SortOrder > rang)
+                    rang = column.SortOrder;
+        });
+        par.columns[index].SortOrder = rang+1;
+        par.columns[index].Sort = event.target.value;
+        setAction(action + 1);
+    }
     return (
         <Table size="small">
             <TableBody>
 
                 {par.columns.map((column, index) => {
                     return (
-                        <TableRow>
+                        <TableRow key={column.FieldName}>
                             <TableCell>
                                 <TextField id={column.FieldName} label={column.FieldCaption} style={{ width: "50vw" }}
                                     value={column.FindString}
@@ -43,7 +44,10 @@ export default function DataGrid(par) {
                                 {column.SortOrder}
                             </TableCell>
                             <TableCell>
-                                <Select native style={{ width: 200 }}>
+                                <Select native style={{ width: 200 }}
+                                value= {column.Sort}
+                                onChange={(event) => sortChange(event, index)}
+                                >
                                     <option>Нет</option>
                                     <option>По возрастанию</option>
                                     <option>По убыванию</option>

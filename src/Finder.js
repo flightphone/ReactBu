@@ -11,16 +11,17 @@ import Drawer from '@material-ui/core/Drawer';
 import { baseUrl, openMap, mainObj } from './App';
 import DataGrid from './DataGrid';
 import DataFilter from './DataFilter';
+import Editor from './Editor';
+import Pagination from './Pagination';
 
 import MenuIcon from '@material-ui/icons/Menu';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import CodeIcon from '@material-ui/icons/Code';
-import FirstPageIcon from '@material-ui/icons/FirstPage';
-import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import LastPageIcon from '@material-ui/icons/LastPage';
 import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
+import EditIcon from '@material-ui/icons/Edit';
+import AddIcon from '@material-ui/icons/Add';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 
 
@@ -46,59 +47,17 @@ const useStyles = makeStyles((theme) => ({
 
 function Finder(props) {
     const classes = useStyles();
-
-
-    //const [Descr, setDescr] = useState("Загрузка...");
     const [load, setLoad] = useState(true);
     const [stateDrawer, setStateDrawer] = useState(false);
-    //const [page, setPage] = useState(0);
-    //const [count, setCount] = useState(0);
     const [mode, setMode] = useState("grid");
-
     const [current, setCurrent] = useState(-1);
 
-    /*
-    const [current, setCurrent] = useState(-1);
-    function handleCurrent(r) {
-        setCurrent(r);
-    }
-    */
     //Достаточно просто вызвать setCurrent, что бы запустить процесс отрисовки всего компонента
     //openMap.get(props.id).data.setCurrent = handleCurrent;
-
-
-
-
-    //let Descr = "Загрузка...";
-    //let count = 0;
-    //let page = 0;
-
 
     const visible = props.visible;
     const id = props.id;
     const IdDeclare = props.params;
-
-
-    function Descr() {
-        if (openMap.get(id).data.Descr)
-            return openMap.get(id).data.Descr;
-        else
-            return ("Загрузка...");
-    }
-
-    function count() {
-        if (openMap.get(id).data.TotalTab)
-            return openMap.get(id).data.TotalTab[0].n_total;
-        else
-            return 0;
-    }
-
-    function page() {
-        if (openMap.get(id).data.page)
-            return (openMap.get(id).data.page - 1);
-        else
-            return 0;
-    }
 
     useEffect(() => { getData(); }, []);
 
@@ -121,19 +80,20 @@ function Finder(props) {
         else {
             let v = openMap.get(id);
             v.data = data;
-            //Descr = data.Descr;
-            //count = data.TotalTab[0].n_total;
             setLoad(false);
-
-            //openMap.get(props.id).data.setCurrent = handleCurrent;
-            //Для запуска перерисовки
-            //v.data.setCurrent = handleCurrent;
         }
     }
 
+    function Descr() {
+        if (openMap.get(id).data.Descr)
+            return openMap.get(id).data.Descr;
+        else
+            return ("Загрузка...");
+    }
+
+
     function renderTab() {
         if (visible) {
-            //alert(IdDeclare);
             return <DataGrid columns={openMap.get(id).data.Fcols} rows={openMap.get(id).data.MainTab} id={id} />
         }
 
@@ -150,7 +110,7 @@ function Finder(props) {
         setStateDrawer(open);
     };
 
-    const rowsPerPage = 30;
+
 
     async function onChangePage(event, p) {
         const url = baseUrl + "React/FinderStart?id=" + IdDeclare + "&mode=data&page=" + (p + 1).toString();
@@ -175,21 +135,6 @@ function Finder(props) {
         }
     }
 
-    const handleFirstPageButtonClick = (event) => {
-        onChangePage(event, 0);
-    };
-
-    const handleBackButtonClick = (event) => {
-        onChangePage(event, page() - 1);
-    };
-
-    const handleNextButtonClick = (event) => {
-        onChangePage(event, page() + 1);
-    };
-
-    const handleLastPageButtonClick = (event) => {
-        onChangePage(event, Math.max(0, Math.ceil(count() / rowsPerPage) - 1));
-    };
 
     function setFilter() {
         setMode("grid");
@@ -199,39 +144,63 @@ function Finder(props) {
         if (props.addinit && !load)
             return (props.addinit());
     }
+
+    const renderEditBut = () => {
+        if (load)
+            return;
+        if (openMap.get(id).data.EditProc) {
+            return (
+
+                <React.Fragment>
+                    <IconButton className={classes.menuButton} onClick={() => { add(); }}>
+                        <AddIcon />
+                    </IconButton>
+                    <IconButton className={classes.menuButton} onClick={() => { edit(); }}>
+                        <EditIcon />
+                    </IconButton>
+                    <IconButton className={classes.menuButton}>
+                        <DeleteIcon />
+                    </IconButton>
+                </React.Fragment>
+            );
+        }
+    }
+    const save = () => {
+        alert("save");
+        setMode("grid");
+    }
+
+    const closeEditor = () => {
+        setMode("grid");
+    }
+
+    const edit = () => {
+        setMode("edit");
+    }
+
+    const add = () => {
+        setMode("add");
+    }
+
+    const renderEditor = () => {
+        if (load)
+            return;
+        if (openMap.get(id).data.EditProc) {
+            return (
+                <div
+                    hidden={!(mode == "edit" || mode == "add")}
+                    className={classes.fixheight}
+                >
+                    <Editor descr="Новая запись" save={save} closeEditor={closeEditor} id = {id}/>
+                </div>
+            );
+        }
+    }
+
     return (
         <React.Fragment>
             <Drawer anchor="top" open={stateDrawer} onClose={toggleDrawer(false)}>
-                <Toolbar>
-                    <Typography className={classes.title}>
-                        {page() * rowsPerPage + 1} - {Math.min((page() + 1) * rowsPerPage, count())} из {count()}
-                    </Typography>
-                    <IconButton
-                        onClick={handleFirstPageButtonClick}
-                        disabled={page() === 0}
-                        aria-label="first page"
-                    >
-                        <FirstPageIcon />
-                    </IconButton>
-                    <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
-                        <KeyboardArrowLeft />
-                    </IconButton>
-                    {page() + 1} из {Math.max(0, Math.ceil(count() / rowsPerPage) - 1) + 1}
-                    <IconButton
-                        onClick={handleNextButtonClick}
-                        disabled={page() >= Math.ceil(count() / rowsPerPage) - 1}
-                        aria-label="next page"
-                    >
-                        <KeyboardArrowRight />
-                    </IconButton>
-                    <IconButton
-                        onClick={handleLastPageButtonClick}
-                        disabled={page() >= Math.ceil(count() / rowsPerPage) - 1}
-                        aria-label="last page"
-                    >
-                        <LastPageIcon />
-                    </IconButton>
-                </Toolbar>
+                <Pagination id={id} onChangePage={onChangePage} />
             </Drawer>
             <div
                 hidden={!visible}
@@ -252,15 +221,20 @@ function Finder(props) {
                                 {Descr()}
                             </Typography>
 
-                            <IconButton onClick={() => { setMode("filter"); }}>
-                                <FilterListIcon />
-                            </IconButton>
+                            {renderEditBut()}
+                            {(load) ? <span></span> :
+                                <React.Fragment>
+                                    <IconButton onClick={() => { setMode("filter"); }} className={classes.menuButton}>
+                                        <FilterListIcon />
+                                    </IconButton>
 
-                            <Tooltip title="Страницы">
-                                <IconButton onClick={() => { setStateDrawer(true); }}>
-                                    <CodeIcon />
-                                </IconButton>
-                            </Tooltip>
+                                    <Tooltip title="Страницы" >
+                                        <IconButton className={classes.menuButton} onClick={() => { setStateDrawer(true); }}>
+                                            <CodeIcon />
+                                        </IconButton>
+                                    </Tooltip>
+                                </React.Fragment>
+                            }
                             {addinit()}
                         </Toolbar>
                     </AppBar>
@@ -276,7 +250,7 @@ function Finder(props) {
                         <Toolbar>
                             <Typography variant="h6" className={classes.title}>
                                 {Descr()} (фильтровка и сортировка)
-                    </Typography>
+                            </Typography>
 
                             <IconButton onClick={() => { setFilter(); }}>
                                 <CheckIcon />
@@ -292,6 +266,8 @@ function Finder(props) {
                     <div className={classes.offset} />
                     {(load) ? <span></span> : renderFilter()}
                 </div>
+
+                {renderEditor()}
             </div>
         </React.Fragment>);
 }
