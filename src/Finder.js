@@ -62,16 +62,20 @@ function Finder(props) {
     useEffect(() => { getData(); }, []);
 
     async function getData() {
-
-        const url = baseUrl + "React/FinderStart?id=" + IdDeclare;
+        const url = baseUrl + "React/FinderStart";
+        let bd = new FormData();
+        bd.append("id", IdDeclare);
         const response = await fetch(url,
             {
-                method: 'GET', // *GET, POST, PUT, DELETE, etc.
-                mode: 'cors', // no-cors, *cors, same-origin
-                cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-                credentials: 'omit' // include, *same-origin, omit
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                credentials: 'omit',
+                //headers: { "Content-Type": "application/json" },
+                body: bd
             }
         );
+
         const data = await response.json();
         if (data.Error) {
             openMap.get(id).data.Descr = data.Error;
@@ -110,34 +114,51 @@ function Finder(props) {
         setStateDrawer(open);
     };
 
-
-
-    async function onChangePage(event, p) {
-        const url = baseUrl + "React/FinderStart?id=" + IdDeclare + "&mode=data&page=" + (p + 1).toString();
+    async function updateTab()
+    {
+        const url = baseUrl + "React/FinderStart";
+        let bd = new FormData();
+        bd.append("id", IdDeclare);
+        bd.append("mode", "data");
+        bd.append("page", (openMap.get(id).data.page).toString());
+        bd.append("Fc", JSON.stringify(openMap.get(id).data.Fcols));
+        
         const response = await fetch(url,
             {
-                method: 'GET', // *GET, POST, PUT, DELETE, etc.
-                mode: 'cors', // no-cors, *cors, same-origin
-                cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-                credentials: 'omit' // include, *same-origin, omit
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                credentials: 'omit',
+                body: bd
             }
         );
+
         const data = await response.json();
         if (data.Error) {
             openMap.get(id).data.Descr = data.Error;
-            setStateDrawer(false);
         }
         else {
             let v = openMap.get(id);
             v.data.MainTab = data.MainTab;
-            v.data.page = p + 1;
-            setStateDrawer(false);
+            v.data.TotalTab = data.TotalTab;
+            v.data.page = data.page;
         }
+        if (stateDrawer)
+            setStateDrawer(false);
+
+        if (mode!="grid");
+            setMode("grid");
+            
+    }
+
+    function onChangePage(event, p) {
+        openMap.get(id).data.page = p + 1;
+        updateTab();
     }
 
 
     function setFilter() {
-        setMode("grid");
+        updateTab();
     }
 
     const addinit = () => {
@@ -191,7 +212,7 @@ function Finder(props) {
                     hidden={!(mode == "edit" || mode == "add")}
                     className={classes.fixheight}
                 >
-                    <Editor descr="Новая запись" save={save} closeEditor={closeEditor} id = {id}/>
+                    <Editor descr="Новая запись" save={save} closeEditor={closeEditor} id={id} />
                 </div>
             );
         }

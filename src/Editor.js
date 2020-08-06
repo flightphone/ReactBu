@@ -77,7 +77,7 @@ function Editor(props) {
                         return (
                             <TableRow key={column.FieldName}>
                                 <TableCell>
-                                    <TextField id={column.FieldName} label={column.FieldCaption} style={{ width: "80vw" }} />
+                                    <TextField label={column.FieldCaption} style={{ width: "80vw" }} />
                                 </TableCell>
                             </TableRow>
                         );

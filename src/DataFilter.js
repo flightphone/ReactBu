@@ -35,7 +35,7 @@ export default function DataFilter(par) {
                     return (
                         <TableRow key={column.FieldName}>
                             <TableCell>
-                                <TextField id={column.FieldName} label={column.FieldCaption} style={{ width: "50vw" }}
+                                <TextField label={column.FieldCaption} style={{ width: "50vw" }}
                                     value={column.FindString}
                                     onChange={(event) => textChange(event, index)}
                                 />
