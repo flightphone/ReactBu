@@ -22,6 +22,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import EditIcon from '@material-ui/icons/Edit';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
 
 
@@ -114,15 +115,14 @@ function Finder(props) {
         setStateDrawer(open);
     };
 
-    async function updateTab()
-    {
+    async function updateTab() {
         const url = baseUrl + "React/FinderStart";
         let bd = new FormData();
         bd.append("id", IdDeclare);
         bd.append("mode", "data");
         bd.append("page", (openMap.get(id).data.page).toString());
         bd.append("Fc", JSON.stringify(openMap.get(id).data.Fcols));
-        
+
         const response = await fetch(url,
             {
                 method: 'POST',
@@ -146,9 +146,9 @@ function Finder(props) {
         if (stateDrawer)
             setStateDrawer(false);
 
-        if (mode!="grid");
-            setMode("grid");
-            
+        if (mode != "grid");
+        setMode("grid");
+
     }
 
     function onChangePage(event, p) {
@@ -164,6 +164,40 @@ function Finder(props) {
     const addinit = () => {
         if (props.addinit && !load)
             return (props.addinit());
+    }
+
+    function csv() {
+        const url = baseUrl + "React/csv";
+        let bd = new FormData();
+        bd.append("id", IdDeclare);
+        bd.append("Fc", JSON.stringify(openMap.get(id).data.Fcols));
+        fetch(url,
+            {
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                credentials: 'omit',
+                body: bd
+            }
+        ).then(res=>res.blob()).then( blob => {
+            let file = window.URL.createObjectURL(blob);
+            let a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.setAttribute("download", "data.csv");
+            a.click();
+          });
+    }
+    const renderAddBut = () => {
+        if (load)
+            return;
+        return (
+            <Tooltip title="Экспорт в CSV">
+                <IconButton className={classes.menuButton} onClick={() => { csv(); }}>
+                    <CloudDownloadIcon />
+                </IconButton>
+            </Tooltip>
+        );
+
     }
 
     const renderEditBut = () => {
@@ -256,6 +290,7 @@ function Finder(props) {
                                     </Tooltip>
                                 </React.Fragment>
                             }
+                            {renderAddBut()}
                             {addinit()}
                         </Toolbar>
                     </AppBar>
