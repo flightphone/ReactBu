@@ -62,10 +62,29 @@ function Finder(props) {
 
     useEffect(() => { getData(); }, []);
 
+    const OpenMapData = () =>
+    {
+        return openMap.get(id).data;
+    }
+
+    const OpenMapId = () => {
+        return openMap.get(id);
+    }
+
     async function getData() {
         const url = baseUrl + "React/FinderStart";
         let bd = new FormData();
         bd.append("id", IdDeclare);
+
+        let mid = OpenMapId(); 
+        if (mid.SQLParams)
+        {
+            bd.append("SQLParams", JSON.stringify(mid.SQLParams));
+        }            
+        if (mid.TextParams)
+            bd.append("TextParams", JSON.stringify(mid.TextParams));
+    
+
         const response = await fetch(url,
             {
                 method: 'POST',
@@ -79,19 +98,19 @@ function Finder(props) {
 
         const data = await response.json();
         if (data.Error) {
-            openMap.get(id).data.Descr = data.Error;
+            OpenMapData().Descr = data.Error;
             setCurrent(current + 1);
         }
         else {
-            let v = openMap.get(id);
+            let v = OpenMapId();
             v.data = data;
             setLoad(false);
         }
     }
 
     function Descr() {
-        if (openMap.get(id).data.Descr)
-            return openMap.get(id).data.Descr;
+        if (OpenMapData().Descr)
+            return OpenMapData().Descr;
         else
             return ("Загрузка...");
     }
@@ -99,7 +118,7 @@ function Finder(props) {
 
     function renderTab() {
         if (visible) {
-            return <DataGrid columns={openMap.get(id).data.Fcols} rows={openMap.get(id).data.MainTab} id={id} />
+            return <DataGrid columns={OpenMapData().Fcols} rows={OpenMapData().MainTab} id={id} />
         }
 
     }
@@ -107,7 +126,7 @@ function Finder(props) {
 
     function renderFilter() {
         if (visible) {
-            return <DataFilter columns={openMap.get(id).data.Fcols} />
+            return <DataFilter columns={OpenMapData().Fcols} />
         }
     }
 
@@ -118,11 +137,16 @@ function Finder(props) {
     async function updateTab() {
         const url = baseUrl + "React/FinderStart";
         let bd = new FormData();
+        let mid = OpenMapData(); 
         bd.append("id", IdDeclare);
         bd.append("mode", "data");
-        bd.append("page", (openMap.get(id).data.page).toString());
-        bd.append("Fc", JSON.stringify(openMap.get(id).data.Fcols));
+        bd.append("page", (mid.page).toString());
+        bd.append("Fc", JSON.stringify(mid.Fcols));
+        if (mid.SQLParams)
+            bd.append("SQLParams", JSON.stringify(mid.SQLParams));
 
+        if (mid.TextParams)
+            bd.append("TextParams", JSON.stringify(mid.TextParams));
         const response = await fetch(url,
             {
                 method: 'POST',
@@ -135,13 +159,13 @@ function Finder(props) {
 
         const data = await response.json();
         if (data.Error) {
-            openMap.get(id).data.Descr = data.Error;
+            mid.Descr = data.Error;
         }
         else {
-            let v = openMap.get(id);
-            v.data.MainTab = data.MainTab;
-            v.data.TotalTab = data.TotalTab;
-            v.data.page = data.page;
+            //let v = openMap.get(id);
+            mid.MainTab = data.MainTab;
+            mid.TotalTab = data.TotalTab;
+            mid.page = data.page;
         }
         if (stateDrawer)
             setStateDrawer(false);
@@ -152,7 +176,7 @@ function Finder(props) {
     }
 
     function onChangePage(event, p) {
-        openMap.get(id).data.page = p + 1;
+        OpenMapData().page = p + 1;
         updateTab();
     }
 
@@ -169,8 +193,14 @@ function Finder(props) {
     function csv() {
         const url = baseUrl + "React/csv";
         let bd = new FormData();
+        let mid = OpenMapData();
         bd.append("id", IdDeclare);
-        bd.append("Fc", JSON.stringify(openMap.get(id).data.Fcols));
+        bd.append("Fc", JSON.stringify(mid.Fcols));
+        if (mid.SQLParams)
+            bd.append("SQLParams", JSON.stringify(mid.SQLParams));
+        if (mid.TextParams)
+            bd.append("TextParams", JSON.stringify(mid.TextParams));
+
         fetch(url,
             {
                 method: 'POST',
@@ -203,7 +233,7 @@ function Finder(props) {
     const renderEditBut = () => {
         if (load)
             return;
-        if (openMap.get(id).data.EditProc) {
+        if (OpenMapData().EditProc) {
             return (
 
                 <React.Fragment>
@@ -240,7 +270,7 @@ function Finder(props) {
     const renderEditor = () => {
         if (load)
             return;
-        if (openMap.get(id).data.EditProc) {
+        if (OpenMapData().EditProc) {
             return (
                 <div
                     hidden={!(mode == "edit" || mode == "add")}

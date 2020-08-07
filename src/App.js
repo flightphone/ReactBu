@@ -89,9 +89,30 @@ function App(props) {
     let p = menuMap.get(id);
     let control = (p.params) ? Finder : Comp1;
     let params = p.params;
+    let SQLParams = null; //new Map();
+    if (p.link1 == "RegulationPrint.repSDM")
+    {
+      SQLParams = {
+        "@DateStart" : "2000-01-01",
+        "@DateFinish": "2099-01-01"
+      };
+      
+    }
+
+    if (p.link1 == "RegulationPrint.ServiceReport")
+    {
+      SQLParams = {
+        "@DateStart" : "2000-01-01",
+        "@DateFinish": "2099-01-01",
+        "@AL_UTG": "<Все>"
+      };
+      
+    }
+
     return {
       Conrol: control,
-      Params: params
+      Params: params,
+      SQLParams : SQLParams
     }
   }
 
@@ -101,6 +122,7 @@ function App(props) {
       let obj = {
         Control: c.Conrol,
         Params: c.Params,
+        SQLParams : c.SQLParams,
         data: {}
       }
       openMap.set(id, obj);
