@@ -131,6 +131,14 @@ function App(props) {
     Setcurrent(id);
   }
 
+  function addform(id, obj) {
+    if (openMap.get(id) == null) {
+      openMap.set(id, obj);
+      openIDs.push(id);
+    }
+    Setcurrent(id);
+  }
+
   async function getTree() {
 
     const url = baseUrl + "ustore/gettree";
@@ -172,6 +180,7 @@ function App(props) {
   }
   //Передаем фунцию через глобальный объект
   mainObj.showMenu = show;
+  mainObj.addform = addform;
 
   return (
     <ThemeProvider theme={theme}>

@@ -23,6 +23,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import DetailsIcon from '@material-ui/icons/Details';
 
 
 
@@ -98,8 +99,9 @@ function Finder(props) {
 
         const data = await response.json();
         if (data.Error) {
-            OpenMapData().Descr = data.Error;
+            //OpenMapData().Descr = data.Error;
             setCurrent(current + 1);
+            alert(data.Error);
         }
         else {
             let v = OpenMapId();
@@ -159,7 +161,7 @@ function Finder(props) {
 
         const data = await response.json();
         if (data.Error) {
-            mid.Descr = data.Error;
+            alert(data.Error);
         }
         else {
             //let v = openMap.get(id);
@@ -217,15 +219,43 @@ function Finder(props) {
             a.click();
           });
     }
+
+    const openDetail = ()=>{
+        let mid = OpenMapData();
+        if (mid.curRow == null)
+            return;
+        let rw = mid.MainTab[mid.curRow];
+        let val = rw[mid.KeyF];
+        let jsstr = '{"' + mid.KeyF + '":"' + val + '"}';
+        let obj = {
+            Control: Finder,
+            Params: mid.KeyValue,
+            TextParams : JSON.parse(jsstr),
+            data: {}
+          }
+        let newid = id + "_" + val; 
+        mainObj.addform(newid, obj)
+
+    }
+
     const renderAddBut = () => {
         if (load)
             return;
         return (
+            <React.Fragment>
             <Tooltip title="Экспорт в CSV">
                 <IconButton className={classes.menuButton} onClick={() => { csv(); }}>
                     <CloudDownloadIcon />
                 </IconButton>
             </Tooltip>
+            {(OpenMapData().KeyValue)?
+                <Tooltip title="Детали">
+                    <IconButton className={classes.menuButton} onClick={() => { openDetail(); }}>
+                        <DetailsIcon />
+                    </IconButton>
+                </Tooltip> : ""
+            }
+            </React.Fragment>
         );
 
     }

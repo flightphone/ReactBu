@@ -54,7 +54,7 @@ const useStyles = makeStyles({
 
 export default function DataGrid(par) {
   const classes = useStyles();
-  let initc = (openMap.get(par.id).data.curRow) ? openMap.get(par.id).data.curRow : -1;
+  let initc = (openMap.get(par.id).data.curRow!=null) ? openMap.get(par.id).data.curRow : -1;
   const [current, setCurrent] = useState(initc);
 
 
