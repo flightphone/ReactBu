@@ -8,7 +8,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Drawer from '@material-ui/core/Drawer';
 
 
-import { baseUrl, openMap, mainObj } from './App';
+import { baseUrl, openMap, mainObj, prodaction } from './App';
 import DataGrid from './DataGrid';
 import DataFilter from './DataFilter';
 import Editor from './Editor';
@@ -89,9 +89,9 @@ function Finder(props) {
         const response = await fetch(url,
             {
                 method: 'POST',
-                mode: 'cors',
+                mode: (prodaction)?'no-cors':'cors',
                 cache: 'no-cache',
-                credentials: 'omit',
+                credentials: (prodaction)?'include':'omit',
                 //headers: { "Content-Type": "application/json" },
                 body: bd
             }
@@ -152,9 +152,9 @@ function Finder(props) {
         const response = await fetch(url,
             {
                 method: 'POST',
-                mode: 'cors',
+                mode: (prodaction)?'no-cors':'cors',
                 cache: 'no-cache',
-                credentials: 'omit',
+                credentials: (prodaction)?'include':'omit',
                 body: bd
             }
         );

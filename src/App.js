@@ -39,7 +39,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const baseUrl = "http://127.0.0.1:5000/";
+const prodaction = false;
+const baseUrl = (prodaction)?"":"http://127.0.0.1:5000/";
 
 let menuMap = new Map();
 function createMenuMap(tree) {
@@ -145,9 +146,9 @@ function App(props) {
     const response = await fetch(url,
       {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
-        mode: 'cors', // no-cors, *cors, same-origin
+        mode: (prodaction)?'no-cors':'cors', // no-cors, *cors, same-origin
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: 'omit' // include, *same-origin, omit
+        credentials: (prodaction)?'include':'omit' // include, *same-origin, omit
       }
     );
 
@@ -219,4 +220,4 @@ function App(props) {
 }
 
 export default App;
-export { baseUrl, openMap, mainObj };
+export { baseUrl, openMap, mainObj, prodaction };
