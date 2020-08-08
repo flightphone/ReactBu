@@ -56,6 +56,7 @@ let openMap = new Map();
 let startObj = {
   Control: Dogovors,
   Params: "1445",
+  SQLParams: {},
   data: {}
 }
 openMap.set("839", startObj);
@@ -145,7 +146,7 @@ function App(props) {
     const url = baseUrl + "ustore/gettree";
     const response = await fetch(url,
       {
-        method: 'GET', // *GET, POST, PUT, DELETE, etc.
+        method: 'POST', // *GET, POST, PUT, DELETE, etc.
         mode: (prodaction)?'no-cors':'cors', // no-cors, *cors, same-origin
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
         credentials: (prodaction)?'include':'omit' // include, *same-origin, omit

@@ -17,11 +17,11 @@ function Dogovors(props) {
     const [current, setCurrent] = useState(-1);
     function handleCurrent(r) {
         //alert('a');
-        setCurrent(r);
+        setCurrent(current+1);
     }
 
     //Достаточно просто вызвать setCurrent, что бы запустить процесс отрисовки
-    openMap.get(props.id).data.setCurrent = handleCurrent;
+    
 
 
     function addinit() {
@@ -31,7 +31,8 @@ function Dogovors(props) {
         if (!openMap.get(props.id).data.MainTab)
             return;
         */
-        let c = (openMap.get(props.id).data.curRow) ? openMap.get(props.id).data.curRow : 0;
+        openMap.get(props.id).data.setCurrent = handleCurrent;
+        let c = (openMap.get(props.id).data.curRow!=null) ? openMap.get(props.id).data.curRow : 0;
         //let c = current;
         if (c == -1 || c > openMap.get(props.id).data.MainTab.length - 1)
             return;

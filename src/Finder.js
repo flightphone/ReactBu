@@ -104,6 +104,7 @@ function Finder(props) {
             alert(data.Error);
         }
         else {
+            data.curRow = 0;
             let v = OpenMapId();
             v.data = data;
             setLoad(false);
@@ -206,9 +207,9 @@ function Finder(props) {
         fetch(url,
             {
                 method: 'POST',
-                mode: 'cors',
+                mode: (prodaction)?'no-cors':'cors',
                 cache: 'no-cache',
-                credentials: 'omit',
+                credentials: (prodaction)?'include':'omit',
                 body: bd
             }
         ).then(res=>res.blob()).then( blob => {
@@ -261,6 +262,7 @@ function Finder(props) {
     }
 
     const renderEditBut = () => {
+        return;
         if (load)
             return;
         if (OpenMapData().EditProc) {
