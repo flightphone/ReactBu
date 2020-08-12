@@ -12,6 +12,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
 
 
 import SaveIcon from '@material-ui/icons/Save';
@@ -45,7 +46,59 @@ const useStyles = makeStyles((theme) => ({
 function Editor(props) {
     const classes = useStyles();
     const [mode, setMode] = useState("edit");
+    const [action, setAction] = useState(0);
     const id = props.id;
+
+    function textChange(event, index) {
+        openMap.get(id).data.WorkRow[index] = event.target.value;
+        setAction(action + 1);
+    }
+
+    const sortChange = (event, column) => {
+        column.joinRow.FindConrol.MainTab.map((row) => {
+            if (row[column.joinRow.keyField] == event.target.value) {
+                for (let s in column.joinRow.fields) {
+                    openMap.get(id).data.WorkRow[column.joinRow.fields[s]] = row[s];
+                }
+                setAction(action + 1);
+            }
+        })
+
+    }
+
+    const renderField = (column, index) => {
+        if (column.joinRow != null) {
+            if (column.joinRow.classname == "Bureau.GridCombo") {
+                return (
+                    <React.Fragment>
+                        <InputLabel htmlFor={id + "_" + index.toString() + "_" + column.FieldName + "_field"}>{column.FieldCaption}</InputLabel>
+                        <Select native style={{ width: "95vw" }}
+                            inputProps={{
+                                name: id + "_" + index.toString() + "_" + column.FieldName + "_field",
+                                id: id + "_" + index.toString() + "_" + column.FieldName + "_field",
+                            }}
+                            value={openMap.get(id).data.WorkRow[column.joinRow.valField]}
+                            onChange={(event) => sortChange(event, column)}
+                        >
+                            {column.joinRow.FindConrol.MainTab.map((row) => {
+                                return (<option value={row[column.joinRow.keyField]}>{row[column.joinRow.FindConrol.DispField]}</option>);
+                            })}
+
+                        </Select>
+                    </React.Fragment>
+                );
+            }
+        }
+        return (
+            <TextField label={column.FieldCaption} key={column.FieldName}
+                value={openMap.get(id).data.WorkRow[column.FieldName]}
+                style={{ width: "95vw" }}
+                onChange={(event) => textChange(event, column.FieldName)}
+            />
+        );
+    }
+
+
     return (
         <div
             hidden={mode != "edit"}
@@ -75,9 +128,9 @@ function Editor(props) {
 
                     {openMap.get(id).data.ReferEdit.Editors.map((column, index) => {
                         return (
-                            <TableRow key={column.FieldName}>
+                            <TableRow>
                                 <TableCell>
-                                    <TextField label={column.FieldCaption} style={{ width: "80vw" }} />
+                                    {renderField(column, index)}
                                 </TableCell>
                             </TableRow>
                         );

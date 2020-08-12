@@ -63,8 +63,7 @@ function Finder(props) {
 
     useEffect(() => { getData(); }, []);
 
-    const OpenMapData = () =>
-    {
+    const OpenMapData = () => {
         return openMap.get(id).data;
     }
 
@@ -77,21 +76,20 @@ function Finder(props) {
         let bd = new FormData();
         bd.append("id", IdDeclare);
 
-        let mid = OpenMapId(); 
-        if (mid.SQLParams)
-        {
+        let mid = OpenMapId();
+        if (mid.SQLParams) {
             bd.append("SQLParams", JSON.stringify(mid.SQLParams));
-        }            
+        }
         if (mid.TextParams)
             bd.append("TextParams", JSON.stringify(mid.TextParams));
-    
+
 
         const response = await fetch(url,
             {
                 method: 'POST',
-                mode: (prodaction)?'no-cors':'cors',
+                mode: (prodaction) ? 'no-cors' : 'cors',
                 cache: 'no-cache',
-                credentials: (prodaction)?'include':'omit',
+                credentials: (prodaction) ? 'include' : 'omit',
                 //headers: { "Content-Type": "application/json" },
                 body: bd
             }
@@ -105,6 +103,10 @@ function Finder(props) {
         }
         else {
             data.curRow = 0;
+            data.WorkRow = {};
+            data.ColumnTab.map((column) => {
+                data.WorkRow[column] = "";
+            });
             let v = OpenMapId();
             v.data = data;
             setLoad(false);
@@ -140,7 +142,7 @@ function Finder(props) {
     async function updateTab() {
         const url = baseUrl + "React/FinderStart";
         let bd = new FormData();
-        let mid = OpenMapData(); 
+        let mid = OpenMapData();
         bd.append("id", IdDeclare);
         bd.append("mode", "data");
         bd.append("page", (mid.page).toString());
@@ -153,9 +155,9 @@ function Finder(props) {
         const response = await fetch(url,
             {
                 method: 'POST',
-                mode: (prodaction)?'no-cors':'cors',
+                mode: (prodaction) ? 'no-cors' : 'cors',
                 cache: 'no-cache',
-                credentials: (prodaction)?'include':'omit',
+                credentials: (prodaction) ? 'include' : 'omit',
                 body: bd
             }
         );
@@ -207,21 +209,21 @@ function Finder(props) {
         fetch(url,
             {
                 method: 'POST',
-                mode: (prodaction)?'no-cors':'cors',
+                mode: (prodaction) ? 'no-cors' : 'cors',
                 cache: 'no-cache',
-                credentials: (prodaction)?'include':'omit',
+                credentials: (prodaction) ? 'include' : 'omit',
                 body: bd
             }
-        ).then(res=>res.blob()).then( blob => {
+        ).then(res => res.blob()).then(blob => {
             let file = window.URL.createObjectURL(blob);
             let a = document.createElement("a");
             a.href = URL.createObjectURL(blob);
             a.setAttribute("download", "data.csv");
             a.click();
-          });
+        });
     }
 
-    const openDetail = ()=>{
+    const openDetail = () => {
         let mid = OpenMapData();
         if (mid.curRow == null)
             return;
@@ -231,10 +233,10 @@ function Finder(props) {
         let obj = {
             Control: Finder,
             Params: mid.KeyValue,
-            TextParams : JSON.parse(jsstr),
+            TextParams: JSON.parse(jsstr),
             data: {}
-          }
-        let newid = id + "_" + val; 
+        }
+        let newid = id + "_" + val;
         mainObj.addform(newid, obj)
 
     }
@@ -244,25 +246,25 @@ function Finder(props) {
             return;
         return (
             <React.Fragment>
-            <Tooltip title="Экспорт в CSV">
-                <IconButton className={classes.menuButton} onClick={() => { csv(); }}>
-                    <CloudDownloadIcon />
-                </IconButton>
-            </Tooltip>
-            {(OpenMapData().KeyValue)?
-                <Tooltip title="Детали">
-                    <IconButton className={classes.menuButton} onClick={() => { openDetail(); }}>
-                        <DetailsIcon />
+                <Tooltip title="Экспорт в CSV">
+                    <IconButton className={classes.menuButton} onClick={() => { csv(); }}>
+                        <CloudDownloadIcon />
                     </IconButton>
-                </Tooltip> : ""
-            }
+                </Tooltip>
+                {(OpenMapData().KeyValue) ?
+                    <Tooltip title="Детали">
+                        <IconButton className={classes.menuButton} onClick={() => { openDetail(); }}>
+                            <DetailsIcon />
+                        </IconButton>
+                    </Tooltip> : ""
+                }
             </React.Fragment>
         );
 
     }
 
     const renderEditBut = () => {
-        return;
+        //return;
         if (load)
             return;
         if (OpenMapData().EditProc) {
@@ -283,7 +285,18 @@ function Finder(props) {
         }
     }
     const save = () => {
-        alert("save");
+        //alert("save");
+        let data = OpenMapData();
+        let row = {};
+        if (mode == "edit") {
+            let c = data.curRow;
+            row = data.MainTab[c];
+        }
+        data.ColumnTab.map((column) => {
+            row[column] = data.WorkRow[column];
+        });
+        if (mode == "add")
+            data.MainTab.push(row);
         setMode("grid");
     }
 
@@ -292,23 +305,43 @@ function Finder(props) {
     }
 
     const edit = () => {
+        let data = OpenMapData();
+        data.WorkRow = {};
+        let c = data.curRow;
+        let row = data.MainTab[c];
+        data.ColumnTab.map((column) => {
+            data.WorkRow[column] = (row[column] == null) ? "" : row[column];
+        });
         setMode("edit");
     }
 
     const add = () => {
+        let data = OpenMapData();
+        data.WorkRow = {};
+        data.ColumnTab.map((column) => {
+            data.WorkRow[column] = "";
+        });
         setMode("add");
     }
 
     const renderEditor = () => {
         if (load)
             return;
+        let editDescr = "Новая запись";
+        if (mode == "edit") {
+
+            let data = OpenMapData();
+            let c = data.curRow;
+            let row = data.MainTab[c];
+            editDescr = row[data.DispField].toString() + " (редактирование)";
+        }
         if (OpenMapData().EditProc) {
             return (
                 <div
                     hidden={!(mode == "edit" || mode == "add")}
                     className={classes.fixheight}
                 >
-                    <Editor descr="Новая запись" save={save} closeEditor={closeEditor} id={id} />
+                    <Editor descr={editDescr} save={save} closeEditor={closeEditor} id={id} mode={mode} />
                 </div>
             );
         }
