@@ -18,9 +18,11 @@ import InputLabel from '@material-ui/core/InputLabel';
 import SaveIcon from '@material-ui/icons/Save';
 import ClearIcon from '@material-ui/icons/Clear';
 import MenuIcon from '@material-ui/icons/Menu';
+import SearchIcon from '@material-ui/icons/Search';
 
 
 import { openMap, mainObj } from './App';
+import Finder from './Finder';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -88,57 +90,101 @@ function Editor(props) {
                     </React.Fragment>
                 );
             }
+            if (column.joinRow.classname == "Bureau.Finder") {
+                return (
+                    <React.Fragment>
+                        <TextField label={column.FieldCaption} key={column.FieldName}
+                            value={openMap.get(id).data.WorkRow[column.FieldName]}
+                            style={{ width: "90vw" }}
+                            onChange={(event) => textChange(event, column.FieldName)}
+                        />
+
+                        <IconButton onClick={() => { setMode("finder_" + index.toString()) }}>
+                            <SearchIcon />
+                        </IconButton>
+
+                    </React.Fragment>
+                );
+            }
         }
         return (
-            <TextField label={column.FieldCaption} key={column.FieldName}
-                value={openMap.get(id).data.WorkRow[column.FieldName]}
-                style={{ width: "95vw" }}
-                onChange={(event) => textChange(event, column.FieldName)}
-            />
+            <React.Fragment>
+                <TextField label={column.FieldCaption} key={column.FieldName}
+                    value={openMap.get(id).data.WorkRow[column.FieldName]}
+                    style={{ width: "95vw" }}
+                    onChange={(event) => textChange(event, column.FieldName)}
+                />
+            </React.Fragment>
         );
     }
 
+    const selectFinder = (editid) => {
+        let column = openMap.get(id).data.ReferEdit.Editors[editid];
+        let c = openMap.get(id).data.ReferEdit.Editors[editid].joinRow.FindConrol.curRow;
+        let row = column.joinRow.FindConrol.MainTab[c];
+        for (let s in column.joinRow.fields) {
+            openMap.get(id).data.WorkRow[column.joinRow.fields[s]] = row[s];
+        }
+        setMode("edit");
+    }
+
+    const clearFinder = () => {
+        setMode("edit");
+    }
 
     return (
-        <div
-            hidden={mode != "edit"}
-            className={classes.fixheight}
-        >
-            <AppBar position="fixed">
-                <Toolbar>
-                    <Tooltip title="Меню">
-                        <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" onClick={() => { mainObj.showMenu(); }}>
-                            <MenuIcon />
+        <React.Fragment>
+            <div
+                hidden={mode != "edit"}
+                className={classes.fixheight}
+            >
+                <AppBar position="fixed">
+                    <Toolbar>
+                        <Tooltip title="Меню">
+                            <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" onClick={() => { mainObj.showMenu(); }}>
+                                <MenuIcon />
+                            </IconButton>
+                        </Tooltip>
+                        <Typography variant="h6" className={classes.title}>
+                            {props.descr}
+                        </Typography>
+                        <IconButton onClick={() => { props.save(); }}>
+                            <SaveIcon />
                         </IconButton>
-                    </Tooltip>
-                    <Typography variant="h6" className={classes.title}>
-                        {props.descr}
-                    </Typography>
-                    <IconButton onClick={() => { props.save(); }}>
-                        <SaveIcon />
-                    </IconButton>
-                    <IconButton onClick={() => { props.closeEditor(); }}>
-                        <ClearIcon />
-                    </IconButton>
-                </Toolbar>
-            </AppBar>
-            <div className={classes.offset} />
-            <Table size="small">
-                <TableBody>
+                        <IconButton onClick={() => { props.closeEditor(); }}>
+                            <ClearIcon />
+                        </IconButton>
+                    </Toolbar>
+                </AppBar>
+                <div className={classes.offset} />
+                <Table size="small">
+                    <TableBody>
 
-                    {openMap.get(id).data.ReferEdit.Editors.map((column, index) => {
+                        {openMap.get(id).data.ReferEdit.Editors.map((column, index) => {
+                            return (
+                                <TableRow>
+                                    <TableCell>
+                                        {renderField(column, index)}
+                                    </TableCell>
+                                </TableRow>
+                            );
+                        })}
+
+                    </TableBody>
+                </Table>
+            </div>
+            {openMap.get(id).data.ReferEdit.Editors.map((column, index) => {
+                if (column.joinRow != null)
+                    if (column.joinRow.classname == "Bureau.Finder")
                         return (
-                            <TableRow>
-                                <TableCell>
-                                    {renderField(column, index)}
-                                </TableCell>
-                            </TableRow>
+                            <Finder visible={(mode == "finder_" + index.toString())} params={column.joinRow.IdDeclare} id={id} key={id.toString() + index.toString()} editid={index}
+                                selectFinder={selectFinder}
+                                clearFinder={clearFinder}
+                            />
                         );
-                    })}
+            })}
+        </React.Fragment>
 
-                </TableBody>
-            </Table>
-        </div>
     );
 }
 

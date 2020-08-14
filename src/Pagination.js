@@ -37,16 +37,25 @@ const useStyles = makeStyles((theme) => ({
 function Pagination(props) {
     const classes = useStyles();
     const id = props.id;
+    const editid = props.editid;
+
+    const OpenMapData = () => {
+        if (editid == null)
+            return openMap.get(id).data;
+        else 
+            return openMap.get(id).data.ReferEdit.Editors[editid].joinRow.FindConrol;
+    }
+
     function count() {
-        if (openMap.get(id).data.TotalTab)
-            return openMap.get(id).data.TotalTab[0].n_total;
+        if (OpenMapData().TotalTab)
+            return OpenMapData().TotalTab[0].n_total;
         else
             return 0;
     }
 
     function page() {
-        if (openMap.get(id).data.page)
-            return (openMap.get(id).data.page - 1);
+        if (OpenMapData().page)
+            return (OpenMapData().page - 1);
         else
             return 0;
     }

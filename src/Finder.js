@@ -59,12 +59,16 @@ function Finder(props) {
 
     const visible = props.visible;
     const id = props.id;
+    const editid = props.editid;
     const IdDeclare = props.params;
 
     useEffect(() => { getData(); }, []);
 
     const OpenMapData = () => {
-        return openMap.get(id).data;
+        if (editid == null)
+            return openMap.get(id).data;
+        else
+            return openMap.get(id).data.ReferEdit.Editors[editid].joinRow.FindConrol;
     }
 
     const OpenMapId = () => {
@@ -72,6 +76,10 @@ function Finder(props) {
     }
 
     async function getData() {
+        if (editid != null) {
+            setLoad(false);
+            return;
+        }
         const url = baseUrl + "React/FinderStart";
         let bd = new FormData();
         bd.append("id", IdDeclare);
@@ -123,7 +131,7 @@ function Finder(props) {
 
     function renderTab() {
         if (visible) {
-            return <DataGrid columns={OpenMapData().Fcols} rows={OpenMapData().MainTab} id={id} />
+            return <DataGrid columns={OpenMapData().Fcols} rows={OpenMapData().MainTab} id={id} editid={editid} />
         }
 
     }
@@ -242,6 +250,20 @@ function Finder(props) {
     }
 
     const renderAddBut = () => {
+        if (editid != null) {
+            return (
+                <React.Fragment>
+                    <IconButton onClick={() => { props.selectFinder(editid); }}>
+                        <CheckIcon />
+                    </IconButton>
+
+
+                    <IconButton onClick={() => { props.clearFinder(); }}>
+                        <ClearIcon />
+                    </IconButton>
+                </React.Fragment>
+            )
+        }
         if (load)
             return;
         return (
@@ -264,7 +286,8 @@ function Finder(props) {
     }
 
     const renderEditBut = () => {
-        //return;
+        if (editid != null)
+            return;
         if (load)
             return;
         if (OpenMapData().EditProc) {
@@ -325,6 +348,8 @@ function Finder(props) {
     }
 
     const renderEditor = () => {
+        if (editid != null)
+            return;
         if (load)
             return;
         let editDescr = "Новая запись";
@@ -350,7 +375,7 @@ function Finder(props) {
     return (
         <React.Fragment>
             <Drawer anchor="top" open={stateDrawer} onClose={toggleDrawer(false)}>
-                <Pagination id={id} onChangePage={onChangePage} />
+                <Pagination id={id} onChangePage={onChangePage} editid={editid} />
             </Drawer>
             <div
                 hidden={!visible}
@@ -362,11 +387,11 @@ function Finder(props) {
                 >
                     <AppBar position="fixed">
                         <Toolbar>
-                            <Tooltip title="Меню">
+                            {(editid == null) ? <Tooltip title="Меню">
                                 <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" onClick={() => { mainObj.showMenu(); }}>
                                     <MenuIcon />
                                 </IconButton>
-                            </Tooltip>
+                            </Tooltip> : ""}
                             <Typography variant="h6" className={classes.title}>
                                 {Descr()}
                             </Typography>
