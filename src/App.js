@@ -19,6 +19,14 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import TreeItem from '@material-ui/lab/TreeItem';
 import IconButton from '@material-ui/core/IconButton';
 
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
+
 let treeJson = [];
 let mainObj = {};
 
@@ -40,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const prodaction = false;
-const baseUrl = (prodaction)?"":"http://127.0.0.1:5000/";
+const baseUrl = (prodaction) ? "" : "http://127.0.0.1:5000/";
 
 let menuMap = new Map();
 function createMenuMap(tree) {
@@ -81,6 +89,8 @@ function App(props) {
   const [loading, setLoading] = useState(true);
   const [current, Setcurrent] = useState("839");
   const [stateDrawer, setStateDrawer] = useState(false);
+  const [openAlert, setOpenAlert] = React.useState(false);
+
   useEffect(() => { getTree(); }, []);
 
   function show() {
@@ -92,29 +102,27 @@ function App(props) {
     let control = (p.params) ? Finder : Comp1;
     let params = p.params;
     let SQLParams = null; //new Map();
-    if (p.link1 == "RegulationPrint.repSDM")
-    {
+    if (p.link1 == "RegulationPrint.repSDM") {
       SQLParams = {
-        "@DateStart" : "2000-01-01",
+        "@DateStart": "2000-01-01",
         "@DateFinish": "2099-01-01"
       };
-      
+
     }
 
-    if (p.link1 == "RegulationPrint.ServiceReport")
-    {
+    if (p.link1 == "RegulationPrint.ServiceReport") {
       SQLParams = {
-        "@DateStart" : "2000-01-01",
+        "@DateStart": "2000-01-01",
         "@DateFinish": "2099-01-01",
         "@AL_UTG": "<Все>"
       };
-      
+
     }
 
     return {
       Conrol: control,
       Params: params,
-      SQLParams : SQLParams
+      SQLParams: SQLParams
     }
   }
 
@@ -124,7 +132,7 @@ function App(props) {
       let obj = {
         Control: c.Conrol,
         Params: c.Params,
-        SQLParams : c.SQLParams,
+        SQLParams: c.SQLParams,
         data: {}
       }
       openMap.set(id, obj);
@@ -147,9 +155,9 @@ function App(props) {
     const response = await fetch(url,
       {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
-        mode: (prodaction)?'no-cors':'cors', // no-cors, *cors, same-origin
+        mode: (prodaction) ? 'no-cors' : 'cors', // no-cors, *cors, same-origin
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: (prodaction)?'include':'omit' // include, *same-origin, omit
+        credentials: (prodaction) ? 'include' : 'omit' // include, *same-origin, omit
       }
     );
 
@@ -180,9 +188,20 @@ function App(props) {
     let Cm = value.Control;
     return <Cm visible={(current == id)} params={value.Params} id={id} key={id} />
   }
+  const handleClose = () => {
+    setOpenAlert(false);
+  };
+
+  const showAlert = (title, text) => {
+    mainObj.alertTitle = title;
+    mainObj.alertText = text;
+    setOpenAlert(true);
+  }
+
   //Передаем фунцию через глобальный объект
   mainObj.showMenu = show;
   mainObj.addform = addform;
+  mainObj.alert = showAlert; 
 
   return (
     <ThemeProvider theme={theme}>
@@ -210,6 +229,27 @@ function App(props) {
               </TreeView>
           }
         </Drawer>
+        <Dialog
+          open={openAlert}
+          keepMounted
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-slide-title"
+          aria-describedby="alert-dialog-slide-description"
+        >
+          <DialogTitle id="alert-dialog-slide-title">{mainObj.alertTitle}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-slide-description">
+              {mainObj.alertText}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="primary">
+              ОК
+          </Button>
+          </DialogActions>
+        </Dialog>
+
+
         {
           openIDs.map((id) => (
             rendItem(id)

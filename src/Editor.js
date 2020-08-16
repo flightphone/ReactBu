@@ -50,6 +50,7 @@ function Editor(props) {
     const [mode, setMode] = useState("edit");
     const [action, setAction] = useState(0);
     const id = props.id;
+    const parentmode = props.mode;
 
     function textChange(event, index) {
         openMap.get(id).data.WorkRow[index] = event.target.value;
@@ -74,7 +75,7 @@ function Editor(props) {
                 return (
                     <React.Fragment>
                         <InputLabel htmlFor={id + "_" + index.toString() + "_" + column.FieldName + "_field"}>{column.FieldCaption}</InputLabel>
-                        <Select native style={{ width: "95vw" }}
+                        <Select native style={{ width: "93vw" }}
                             inputProps={{
                                 name: id + "_" + index.toString() + "_" + column.FieldName + "_field",
                                 id: id + "_" + index.toString() + "_" + column.FieldName + "_field",
@@ -111,7 +112,7 @@ function Editor(props) {
             <React.Fragment>
                 <TextField label={column.FieldCaption} key={column.FieldName}
                     value={openMap.get(id).data.WorkRow[column.FieldName]}
-                    style={{ width: "95vw" }}
+                    style={{ width: "93vw" }}
                     onChange={(event) => textChange(event, column.FieldName)}
                 />
             </React.Fragment>
@@ -140,11 +141,11 @@ function Editor(props) {
             >
                 <AppBar position="fixed">
                     <Toolbar>
-                        <Tooltip title="Меню">
+                        {(parentmode!="setting")?<Tooltip title="Меню">
                             <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" onClick={() => { mainObj.showMenu(); }}>
                                 <MenuIcon />
                             </IconButton>
-                        </Tooltip>
+                        </Tooltip>:""}
                         <Typography variant="h6" className={classes.title}>
                             {props.descr}
                         </Typography>

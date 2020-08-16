@@ -24,6 +24,11 @@ import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import DetailsIcon from '@material-ui/icons/Details';
+import SettingsIcon from '@material-ui/icons/Settings';
+
+
+
+
 
 
 
@@ -61,6 +66,7 @@ function Finder(props) {
     const id = props.id;
     const editid = props.editid;
     const IdDeclare = props.params;
+    const filterid = props.filterid;
 
     useEffect(() => { getData(); }, []);
 
@@ -106,8 +112,8 @@ function Finder(props) {
         const data = await response.json();
         if (data.Error) {
             //OpenMapData().Descr = data.Error;
-            setCurrent(current + 1);
-            alert(data.Error);
+            //setCurrent(current + 1);
+            mainObj.alert("Ошибка", data.Error);
         }
         else {
             data.curRow = 0;
@@ -172,7 +178,7 @@ function Finder(props) {
 
         const data = await response.json();
         if (data.Error) {
-            alert(data.Error);
+            mainObj.alert("Ошибка", data.Error);
         }
         else {
             //let v = openMap.get(id);
@@ -280,6 +286,13 @@ function Finder(props) {
                         </IconButton>
                     </Tooltip> : ""
                 }
+                {(filterid != null)?
+                <Tooltip title="Параметры">
+                    <IconButton className={classes.menuButton} onClick={() => { editSetting(); }}>
+                        <SettingsIcon />
+                    </IconButton>
+                </Tooltip>:""
+                }
             </React.Fragment>
         );
 
@@ -308,7 +321,7 @@ function Finder(props) {
         }
     }
     const save = () => {
-        //alert("save");
+        
         let data = OpenMapData();
         let row = {};
         if (mode == "edit") {
@@ -320,6 +333,16 @@ function Finder(props) {
         });
         if (mode == "add")
             data.MainTab.push(row);
+        setMode("grid");
+    }
+
+    const saveSetting = () => {
+        
+        let data = openMap.get(filterid).data;
+        let row = data.MainTab[0];
+        data.ColumnTab.map((column) => {
+            row[column] = data.WorkRow[column];
+        });
         setMode("grid");
     }
 
@@ -336,6 +359,16 @@ function Finder(props) {
             data.WorkRow[column] = (row[column] == null) ? "" : row[column];
         });
         setMode("edit");
+    }
+
+    const editSetting = () => {
+        let data = openMap.get(filterid).data;
+        data.WorkRow = {};
+        let row = data.MainTab[0];
+        data.ColumnTab.map((column) => {
+            data.WorkRow[column] = (row[column] == null) ? "" : row[column];
+        });
+        setMode("setting");
     }
 
     const add = () => {
@@ -371,6 +404,23 @@ function Finder(props) {
             );
         }
     }
+
+    const renderSetting = () => {
+        if (filterid == null)
+            return;
+        if (load)
+            return;
+        let editDescr = Descr() + " (параметры)";
+            return (
+                <div
+                    hidden={!(mode == "setting")}
+                    className={classes.fixheight}
+                >
+                    <Editor descr={editDescr} save={saveSetting} closeEditor={closeEditor} id={filterid} mode={mode} />
+                </div>
+            );
+        }
+    
 
     return (
         <React.Fragment>
@@ -444,6 +494,7 @@ function Finder(props) {
                 </div>
 
                 {renderEditor()}
+                {renderSetting()}
             </div>
         </React.Fragment>);
 }
