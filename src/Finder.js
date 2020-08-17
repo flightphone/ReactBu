@@ -83,6 +83,7 @@ function Finder(props) {
 
     async function getData() {
         if (editid != null) {
+            OpenMapData().curRow = 0;
             setLoad(false);
             return;
         }
@@ -91,6 +92,15 @@ function Finder(props) {
         bd.append("id", IdDeclare);
 
         let mid = OpenMapId();
+
+        if (filterid != null && openMap.get(filterid) != null) {
+            let fdat = openMap.get(filterid).data;
+            fdat.ReferEdit.SaveFieldList.map((f) => {
+                mid.SQLParams["@" + f] = fdat.MainTab[0][f];
+            });
+        }
+
+
         if (mid.SQLParams) {
             bd.append("SQLParams", JSON.stringify(mid.SQLParams));
         }
@@ -286,12 +296,12 @@ function Finder(props) {
                         </IconButton>
                     </Tooltip> : ""
                 }
-                {(filterid != null)?
-                <Tooltip title="Параметры">
-                    <IconButton className={classes.menuButton} onClick={() => { editSetting(); }}>
-                        <SettingsIcon />
-                    </IconButton>
-                </Tooltip>:""
+                {(filterid != null) ?
+                    <Tooltip title="Параметры">
+                        <IconButton className={classes.menuButton} onClick={() => { editSetting(); }}>
+                            <SettingsIcon />
+                        </IconButton>
+                    </Tooltip> : ""
                 }
             </React.Fragment>
         );
@@ -321,7 +331,7 @@ function Finder(props) {
         }
     }
     const save = () => {
-        
+
         let data = OpenMapData();
         let row = {};
         if (mode == "edit") {
@@ -337,13 +347,18 @@ function Finder(props) {
     }
 
     const saveSetting = () => {
-        
+
         let data = openMap.get(filterid).data;
         let row = data.MainTab[0];
         data.ColumnTab.map((column) => {
             row[column] = data.WorkRow[column];
         });
-        setMode("grid");
+
+        let mid = OpenMapData();
+        data.ReferEdit.SaveFieldList.map((f) => {
+                mid.SQLParams["@" + f] = data.MainTab[0][f];
+            });
+        updateTab();
     }
 
     const closeEditor = () => {
@@ -411,16 +426,16 @@ function Finder(props) {
         if (load)
             return;
         let editDescr = Descr() + " (параметры)";
-            return (
-                <div
-                    hidden={!(mode == "setting")}
-                    className={classes.fixheight}
-                >
-                    <Editor descr={editDescr} save={saveSetting} closeEditor={closeEditor} id={filterid} mode={mode} />
-                </div>
-            );
-        }
-    
+        return (
+            <div
+                hidden={!(mode == "setting")}
+                className={classes.fixheight}
+            >
+                <Editor descr={editDescr} save={saveSetting} closeEditor={closeEditor} id={filterid} mode={mode} />
+            </div>
+        );
+    }
+
 
     return (
         <React.Fragment>

@@ -16,7 +16,7 @@ function Dogovors(props) {
     //let initc = (openMap.get(props.id).data.curRow) ? openMap.get(props.id).data.curRow : 0;
     const classes = useStyles();
     const [current, setCurrent] = useState(-1);
-    const [load, setLoad] = useState(false);
+    const [load, setLoad] = useState(true);
     function handleCurrent(r) {
         setCurrent(current + 1);
     }
