@@ -8,7 +8,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Drawer from '@material-ui/core/Drawer';
 
 
-import { baseUrl, openMap, mainObj, prodaction } from './App';
+import { baseUrl, openMap, mainObj, prodaction, dateformat } from './App';
 import DataGrid from './DataGrid';
 import DataFilter from './DataFilter';
 import Editor from './Editor';
@@ -253,11 +253,12 @@ function Finder(props) {
             return;
         let rw = mid.MainTab[mid.curRow];
         let val = rw[mid.KeyF];
-        let jsstr = '{"' + mid.KeyF + '":"' + val + '"}';
+        let jsstr = {};  // '{"' + mid.KeyF + '":"' + val + '"}';
+        jsstr[mid.KeyF] = val;
         let obj = {
             Control: Finder,
             Params: mid.KeyValue,
-            TextParams: JSON.parse(jsstr),
+            TextParams: jsstr, //JSON.parse(jsstr),
             data: {}
         }
         let newid = id + "_" + val;
@@ -330,9 +331,64 @@ function Finder(props) {
             );
         }
     }
-    const save = () => {
+    const save = async () => {
 
         let data = OpenMapData();
+        //default values
+        for (let f in data.DefaultValues)
+        {
+            data.WorkRow[f] = data.DefaultValues[f];
+        }
+
+        for (let f in data.TextParams)
+        {
+            data.WorkRow[f] = data.TextParams[f];
+        }
+
+        let SQLParams = {};
+        data.ReferEdit.SaveFieldList.map((f) => {
+            SQLParams[f] = data.WorkRow[f];
+        });
+
+        const url = baseUrl + "React/exec";
+        let bd = new FormData();
+        
+        bd.append("EditProc", data.EditProc);
+        bd.append("SQLParams", JSON.stringify(SQLParams));
+        bd.append("KeyF", data.KeyF);
+
+        const response = await fetch(url,
+            {
+                method: 'POST',
+                mode: (prodaction) ? 'no-cors' : 'cors',
+                cache: 'no-cache',
+                credentials: (prodaction) ? 'include' : 'omit',
+                body: bd
+            }
+        );
+
+        const res = await response.json();
+        if (res.message!="OK") {
+            mainObj.alert("Ошибка", res.message);
+            return;
+        }
+        else {
+            if (res.ColumnTab.length==1)
+            {
+                data.WorkRow[data.KeyF] = res.MainTab[0][res.ColumnTab[0]];
+            }
+            else
+            {
+                res.ColumnTab.map((column)=>{
+                    data.WorkRow[column] = res.MainTab[0][column];
+                })
+            }    
+            
+        }
+
+
+
+
         let row = {};
         if (mode == "edit") {
             let c = data.curRow;
@@ -373,6 +429,12 @@ function Finder(props) {
         data.ColumnTab.map((column) => {
             data.WorkRow[column] = (row[column] == null) ? "" : row[column];
         });
+        data.ReferEdit.Editors.map((column)=>{
+            if (column.DisplayFormat!=""){
+                data.WorkRow[column.FieldName] = dateformat(data.WorkRow[column.FieldName], column.DisplayFormat)
+            }
+        });
+
         setMode("edit");
     }
 

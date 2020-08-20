@@ -5,41 +5,10 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { openMap } from './App';
-
-
-function dateformat(d, f) {
-  if (!d)
-    return d;
-
-
-  if (d.length != 24) {
-    let re = new RegExp('0\.(0?)');
-    let res = f.match(/0\.(0+)/);
-
-    let n = 0;
-    if (res)
-      if (res.length > 1) {
-        n = res[1].length;
-      }
-
-
-    if (n > 0)
-      return Number(d.toString()).toFixed(n);
-    else
-      return d;
+import { openMap, dateformat } from './App';
 
 
 
-  }
-  f = f.replace('yyyy', d.substr(0, 4));
-  f = f.replace('yy', d.substr(2, 2));
-  f = f.replace('MM', d.substr(5, 2));
-  f = f.replace('dd', d.substr(8, 2));
-  f = f.replace('HH', d.substr(11, 2));
-  f = f.replace('mm', d.substr(14, 2));
-  return f;
-}
 
 const useStyles = makeStyles({
   root: {

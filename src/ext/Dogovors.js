@@ -3,6 +3,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { makeStyles } from '@material-ui/core/styles';
 import Finder from '../Finder';
 import AttachmentIcon from '@material-ui/icons/Attachment';
+import CommentIcon from '@material-ui/icons/Comment';
 import { baseUrl, openMap, mainObj, prodaction } from '../App';
 
 
@@ -84,12 +85,19 @@ function Dogovors(props) {
             return;
         let agr_key = openMap.get(props.id).data.MainTab[c]["agr_key"].toString();
         let fileUrl = baseUrl + "Docfiles/dir?id=" + agr_key + "/";
+        let messUrl = baseUrl + "Docfiles/comments?ag_id=" + agr_key + "&ag_type=agr";
+        
 
         return (
             <React.Fragment>
                 <Tooltip title="Файлы">
                     <a href={fileUrl} target="_blanck" className={classes.menuButton}>
                         <AttachmentIcon style={{ color: "white" }} />
+                    </a>
+                </Tooltip>
+                <Tooltip title="Замечания">
+                    <a href={messUrl} target="_blanck" className={classes.menuButton}>
+                        <CommentIcon style={{ color: "white" }} />
                     </a>
                 </Tooltip>
             </React.Fragment>
