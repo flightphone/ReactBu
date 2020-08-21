@@ -222,11 +222,22 @@ function App(props) {
   }
   const handleClose = () => {
     setOpenAlert(false);
+    if (mainObj.alertConfirm)
+      mainObj.confirmAction();
   };
 
   const showAlert = (title, text) => {
+    mainObj.alertConfirm = false;
     mainObj.alertTitle = title;
     mainObj.alertText = text;
+    setOpenAlert(true);
+  }
+
+  const showConfirm = (title, text, action) => {
+    mainObj.alertConfirm = true;
+    mainObj.alertTitle = title;
+    mainObj.alertText = text;
+    mainObj.confirmAction = action;
     setOpenAlert(true);
   }
 
@@ -234,6 +245,7 @@ function App(props) {
   mainObj.showMenu = show;
   mainObj.addform = addform;
   mainObj.alert = showAlert; 
+  mainObj.confirm = showConfirm; 
 
   return (
     <ThemeProvider theme={theme}>
@@ -264,7 +276,7 @@ function App(props) {
         <Dialog
           open={openAlert}
           keepMounted
-          onClose={handleClose}
+          onClose={()=>{setOpenAlert(false);}}
           aria-labelledby="alert-dialog-slide-title"
           aria-describedby="alert-dialog-slide-description"
         >
@@ -278,6 +290,11 @@ function App(props) {
             <Button onClick={handleClose} color="primary">
               ОК
           </Button>
+          { (mainObj.alertConfirm)?
+            <Button onClick={()=>{setOpenAlert(false);}} color="primary">
+            Отмена
+           </Button>:""
+          }
           </DialogActions>
         </Dialog>
 

@@ -324,24 +324,67 @@ function Finder(props) {
                     <IconButton className={classes.menuButton} onClick={() => { edit(); }}>
                         <EditIcon />
                     </IconButton>
-                    <IconButton className={classes.menuButton}>
+                    <IconButton className={classes.menuButton} onClick={() => { confirmDelete(); }}>
                         <DeleteIcon />
                     </IconButton>
                 </React.Fragment>
             );
         }
     }
+
+    const confirmDelete = () => {
+        let mid = OpenMapData();
+        if (mid.curRow == null)
+            return;
+        let rw = mid.MainTab[mid.curRow];
+        let val = rw[mid.DispField];
+        mainObj.confirm(Descr(), "Удалить запись '" + val + "'?", rowDelete)
+    }
+
+    const rowDelete = async () => {
+        let mid = OpenMapData();
+        let SQLParams = {};
+        SQLParams[mid.KeyF] = mid.MainTab[mid.curRow][mid.KeyF];
+        if (mid.DelProc.toLowerCase().indexOf("_del_1") > -1) {
+            SQLParams["AUDTUSER"] = mid.Account;
+        }
+
+        const url = baseUrl + "React/exec";
+        let bd = new FormData();
+
+        bd.append("EditProc", mid.DelProc);
+        bd.append("SQLParams", JSON.stringify(SQLParams));
+        bd.append("KeyF", mid.KeyF);
+
+        const response = await fetch(url,
+            {
+                method: 'POST',
+                mode: (prodaction) ? 'no-cors' : 'cors',
+                cache: 'no-cache',
+                credentials: (prodaction) ? 'include' : 'omit',
+                body: bd
+            }
+        );
+
+        const res = await response.json();
+        if (res.message != "OK") {
+            mainObj.alert("Ошибка", res.message);
+            return;
+        }
+
+        mid.MainTab.splice(mid.curRow, 1);
+        setCurrent(current + 1);
+    }
+
     const save = async () => {
 
         let data = OpenMapData();
         //default values
-        for (let f in data.DefaultValues)
-        {
+        for (let f in data.DefaultValues) {
             data.WorkRow[f] = data.DefaultValues[f];
         }
 
-        for (let f in data.TextParams)
-        {
+        for (let f in data.TextParams) {
             data.WorkRow[f] = data.TextParams[f];
         }
 
@@ -352,7 +395,7 @@ function Finder(props) {
 
         const url = baseUrl + "React/exec";
         let bd = new FormData();
-        
+
         bd.append("EditProc", data.EditProc);
         bd.append("SQLParams", JSON.stringify(SQLParams));
         bd.append("KeyF", data.KeyF);
@@ -368,22 +411,20 @@ function Finder(props) {
         );
 
         const res = await response.json();
-        if (res.message!="OK") {
+        if (res.message != "OK") {
             mainObj.alert("Ошибка", res.message);
             return;
         }
         else {
-            if (res.ColumnTab.length==1)
-            {
+            if (res.ColumnTab.length == 1) {
                 data.WorkRow[data.KeyF] = res.MainTab[0][res.ColumnTab[0]];
             }
-            else
-            {
-                res.ColumnTab.map((column)=>{
+            else {
+                res.ColumnTab.map((column) => {
                     data.WorkRow[column] = res.MainTab[0][column];
                 })
-            }    
-            
+            }
+
         }
 
 
@@ -412,8 +453,8 @@ function Finder(props) {
 
         let mid = OpenMapData();
         data.ReferEdit.SaveFieldList.map((f) => {
-                mid.SQLParams["@" + f] = data.MainTab[0][f];
-            });
+            mid.SQLParams["@" + f] = data.MainTab[0][f];
+        });
         updateTab();
     }
 
@@ -429,8 +470,8 @@ function Finder(props) {
         data.ColumnTab.map((column) => {
             data.WorkRow[column] = (row[column] == null) ? "" : row[column];
         });
-        data.ReferEdit.Editors.map((column)=>{
-            if (column.DisplayFormat!=""){
+        data.ReferEdit.Editors.map((column) => {
+            if (column.DisplayFormat != "") {
                 data.WorkRow[column.FieldName] = dateformat(data.WorkRow[column.FieldName], column.DisplayFormat)
             }
         });
