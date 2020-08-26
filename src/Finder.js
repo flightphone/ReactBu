@@ -367,7 +367,7 @@ function Finder(props) {
         );
 
         const res = await response.json();
-        if (res.message != "OK") {
+        if (res.message != "OK" && res.message != "Invalid storage type: DBNull.") {
             mainObj.alert("Ошибка", res.message);
             return;
         }
@@ -509,7 +509,7 @@ function Finder(props) {
             let data = OpenMapData();
             let c = data.curRow;
             let row = data.MainTab[c];
-            editDescr = row[data.DispField].toString() + " (редактирование)";
+            editDescr = row[data.DispField] + " (редактирование)";
         }
         if (OpenMapData().EditProc) {
             return (

@@ -93,6 +93,7 @@ function createMenuMap(tree) {
 }
 
 let openMap = new Map();
+
 let startObj = {
   Control: Dogovors,
   Params: "1445",
@@ -100,6 +101,7 @@ let startObj = {
   data: {}
 }
 openMap.set("839", startObj);
+
 
 let openIDs = [];
 openIDs.push("839");
