@@ -106,6 +106,34 @@ openMap.set("839", startObj);
 let openIDs = [];
 openIDs.push("839");
 
+function getForm(id) {
+  let p = menuMap.get(id);
+  let control = (p.params) ? Finder : Comp1;
+  let params = p.params;
+  let SQLParams = null; //new Map();
+  if (p.link1 == "RegulationPrint.repSDM") {
+    SQLParams = {
+      "@DateStart": "2000-01-01",
+      "@DateFinish": "2099-01-01"
+    };
+
+  }
+
+  if (p.link1 == "RegulationPrint.ServiceReport") {
+    SQLParams = {
+      "@DateStart": "2000-01-01",
+      "@DateFinish": "2099-01-01",
+      "@AL_UTG": "<Все>"
+    };
+
+  }
+
+  return {
+    Conrol: control,
+    Params: params,
+    SQLParams: SQLParams
+  }
+}
 
 //===========================================Application================================
 function App(props) {
@@ -131,34 +159,7 @@ function App(props) {
     setStateDrawer(true);
   }
 
-  function getForm(id) {
-    let p = menuMap.get(id);
-    let control = (p.params) ? Finder : Comp1;
-    let params = p.params;
-    let SQLParams = null; //new Map();
-    if (p.link1 == "RegulationPrint.repSDM") {
-      SQLParams = {
-        "@DateStart": "2000-01-01",
-        "@DateFinish": "2099-01-01"
-      };
-
-    }
-
-    if (p.link1 == "RegulationPrint.ServiceReport") {
-      SQLParams = {
-        "@DateStart": "2000-01-01",
-        "@DateFinish": "2099-01-01",
-        "@AL_UTG": "<Все>"
-      };
-
-    }
-
-    return {
-      Conrol: control,
-      Params: params,
-      SQLParams: SQLParams
-    }
-  }
+  
 
   function open(id) {
     if (openMap.get(id) == null) {

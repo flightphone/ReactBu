@@ -90,7 +90,7 @@ function Pagination(props) {
             >
                 <FirstPageIcon />
             </IconButton>
-            <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
+            <IconButton onClick={handleBackButtonClick} disabled={page() === 0} aria-label="previous page">
                 <KeyboardArrowLeft />
             </IconButton>
             {page() + 1} из {Math.max(0, Math.ceil(count() / rowsPerPage) - 1) + 1}
