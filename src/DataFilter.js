@@ -40,11 +40,11 @@ export default function DataFilter(par) {
                                     onChange={(event) => textChange(event, index)}
                                 />
                             </TableCell>
-                            <TableCell style={{ widht: 30 }}>
+                            <TableCell style={{ widht: 20 }}>
                                 {column.SortOrder}
                             </TableCell>
                             <TableCell>
-                                <Select native style={{ width: 200 }}
+                                <Select native 
                                 value= {column.Sort}
                                 onChange={(event) => sortChange(event, index)}
                                 >

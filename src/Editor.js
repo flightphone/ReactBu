@@ -96,7 +96,7 @@ function Editor(props) {
                     <React.Fragment>
                         <TextField label={column.FieldCaption} key={column.FieldName}
                             value={openMap.get(id).data.WorkRow[column.FieldName]}
-                            style={{ width: "90vw" }}
+                            style={{ width: "70vw" }}
                             onChange={(event) => textChange(event, column.FieldName)}
                         />
 
@@ -149,10 +149,10 @@ function Editor(props) {
                         <Typography variant="h6" className={classes.title}>
                             {props.descr}
                         </Typography>
-                        <IconButton onClick={() => { props.save(); }}>
+                        <IconButton color="inherit" onClick={() => { props.save(); }}>
                             <SaveIcon />
                         </IconButton>
-                        <IconButton onClick={() => { props.closeEditor(); }}>
+                        <IconButton color="inherit" onClick={() => { props.closeEditor(); }}>
                             <ClearIcon />
                         </IconButton>
                     </Toolbar>

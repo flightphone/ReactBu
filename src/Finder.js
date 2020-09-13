@@ -6,6 +6,11 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import Drawer from '@material-ui/core/Drawer';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Divider from '@material-ui/core/Divider';
 
 
 import { baseUrl, openMap, mainObj, prodaction, dateformat } from './App';
@@ -25,6 +30,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import DetailsIcon from '@material-ui/icons/Details';
 import SettingsIcon from '@material-ui/icons/Settings';
+import MoreIcon from '@material-ui/icons/MoreVert';
 
 
 
@@ -56,6 +62,7 @@ function Finder(props) {
     const classes = useStyles();
     const [load, setLoad] = useState(true);
     const [stateDrawer, setStateDrawer] = useState(false);
+    const [stateMenu, setStateMenu] = useState(false);
     const [mode, setMode] = useState("grid");
     const [current, setCurrent] = useState(-1);
 
@@ -161,6 +168,10 @@ function Finder(props) {
 
     const toggleDrawer = (open) => (event) => {
         setStateDrawer(open);
+    };
+
+    const toggleMenu = (open) => (event) => {
+        setStateMenu(open);
     };
 
     async function updateTab() {
@@ -270,44 +281,53 @@ function Finder(props) {
         if (editid != null) {
             return (
                 <React.Fragment>
-                    <IconButton onClick={() => { props.selectFinder(editid); }}>
+                    <IconButton color="inherit" onClick={() => { props.selectFinder(editid); }}>
                         <CheckIcon />
                     </IconButton>
 
 
-                    <IconButton onClick={() => { props.clearFinder(); }}>
+                    <IconButton color="inherit" onClick={() => { props.clearFinder(); }}>
                         <ClearIcon />
                     </IconButton>
                 </React.Fragment>
             )
         }
+    }
+    const renderAddListBut = () => {
+        if (editid != null)
+            return;
         if (load)
             return;
         return (
             <React.Fragment>
-                <Tooltip title="Экспорт в CSV">
-                    <IconButton className={classes.menuButton} onClick={() => { csv(); }}>
+                <ListItem button onClick={() => { setStateMenu(false); csv(); }}>
+                    <ListItemIcon>
                         <CloudDownloadIcon />
-                    </IconButton>
-                </Tooltip>
-                {(OpenMapData().KeyValue) ?
-                    <Tooltip title="Детали">
-                        <IconButton className={classes.menuButton} onClick={() => { openDetail(); }}>
+                    </ListItemIcon>
+                    <ListItemText primary="Экспорт в CSV" />
+                </ListItem>
+
+                {
+                    (OpenMapData().KeyValue) ? <ListItem button onClick={() => { setStateMenu(false); openDetail(); }}>
+                        <ListItemIcon>
                             <DetailsIcon />
-                        </IconButton>
-                    </Tooltip> : ""
+                        </ListItemIcon>
+                        <ListItemText primary="Детали" />
+                    </ListItem> : ""
                 }
-                {(filterid != null) ?
-                    <Tooltip title="Параметры">
-                        <IconButton className={classes.menuButton} onClick={() => { editSetting(); }}>
+                {
+                    (filterid != null) ? <ListItem button onClick={() => { setStateMenu(false); editSetting(); }}>
+                        <ListItemIcon>
                             <SettingsIcon />
-                        </IconButton>
-                    </Tooltip> : ""
+                        </ListItemIcon>
+                        <ListItemText primary="Параметры" />
+                    </ListItem> : ""
                 }
-            </React.Fragment>
+            </React.Fragment >
         );
 
     }
+
 
     const renderEditBut = () => {
         if (editid != null)
@@ -318,15 +338,27 @@ function Finder(props) {
             return (
 
                 <React.Fragment>
-                    <IconButton className={classes.menuButton} onClick={() => { add(); }}>
-                        <AddIcon />
-                    </IconButton>
-                    <IconButton className={classes.menuButton} onClick={() => { edit(); }}>
-                        <EditIcon />
-                    </IconButton>
-                    <IconButton className={classes.menuButton} onClick={() => { confirmDelete(); }}>
-                        <DeleteIcon />
-                    </IconButton>
+
+                    <ListItem button onClick={() => { setStateMenu(false); add(); }}>
+                        <ListItemIcon>
+                            <AddIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Добавить" />
+                    </ListItem>
+
+                    <ListItem button onClick={() => { setStateMenu(false); edit(); }}>
+                        <ListItemIcon>
+                            <EditIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Редактировать" />
+                    </ListItem>
+
+                    <ListItem button onClick={() => { setStateMenu(false); confirmDelete(); }}>
+                        <ListItemIcon>
+                            <DeleteIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Удалить" />
+                    </ListItem>
                 </React.Fragment>
             );
         }
@@ -509,7 +541,7 @@ function Finder(props) {
             let data = OpenMapData();
             let c = data.curRow;
             let row = data.MainTab[c];
-            editDescr = row[data.DispField] + " (редактирование)";
+            editDescr = "Редактирование";//row[data.DispField]; // + " (редактирование)";
         }
         if (OpenMapData().EditProc) {
             return (
@@ -545,6 +577,32 @@ function Finder(props) {
             <Drawer anchor="top" open={stateDrawer} onClose={toggleDrawer(false)}>
                 <Pagination id={id} onChangePage={onChangePage} editid={editid} />
             </Drawer>
+            <Drawer anchor="right" open={stateMenu} onClose={toggleMenu(false)}>
+                <div className={classes.root1}>
+                    <List component="nav">
+                        {renderEditBut()}
+                        {renderAddListBut()}
+                        {(load) ? <Divider /> :
+                            <React.Fragment>
+                                <ListItem button onClick={() => { setStateMenu(false); setMode("filter"); }}>
+                                    <ListItemIcon>
+                                        <FilterListIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Фильтровка, сортировка" />
+                                </ListItem>
+
+                                <ListItem button onClick={() => { setStateMenu(false); setStateDrawer(true); }}>
+                                    <ListItemIcon>
+                                        <CodeIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Страницы" />
+                                </ListItem>
+
+                            </React.Fragment>
+                        }
+                    </List>
+                </div>
+            </Drawer>
             <div
                 hidden={!visible}
                 className={classes.fixheight}
@@ -564,22 +622,15 @@ function Finder(props) {
                                 {Descr()}
                             </Typography>
 
-                            {renderEditBut()}
-                            {(load) ? <span></span> :
-                                <React.Fragment>
-                                    <IconButton onClick={() => { setMode("filter"); }} className={classes.menuButton}>
-                                        <FilterListIcon />
-                                    </IconButton>
 
-                                    <Tooltip title="Страницы" >
-                                        <IconButton className={classes.menuButton} onClick={() => { setStateDrawer(true); }}>
-                                            <CodeIcon />
-                                        </IconButton>
-                                    </Tooltip>
-                                </React.Fragment>
-                            }
+
                             {renderAddBut()}
                             {addinit()}
+                            <Tooltip title="Меню" >
+                                <IconButton color="inherit" onClick={() => { setStateMenu(true); }}>
+                                    <MoreIcon />
+                                </IconButton>
+                            </Tooltip>
                         </Toolbar>
                     </AppBar>
                     <div className={classes.offset} />
@@ -593,15 +644,15 @@ function Finder(props) {
                     <AppBar position="fixed">
                         <Toolbar>
                             <Typography variant="h6" className={classes.title}>
-                                {Descr()} (фильтровка и сортировка)
+                                Фильтр,сортировка
                             </Typography>
 
-                            <IconButton onClick={() => { setFilter(); }}>
+                            <IconButton color="inherit" onClick={() => { setFilter(); }}>
                                 <CheckIcon />
                             </IconButton>
 
 
-                            <IconButton onClick={() => { setMode("grid"); }}>
+                            <IconButton color="inherit" onClick={() => { setMode("grid"); }}>
                                 <ClearIcon />
                             </IconButton>
 

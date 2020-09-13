@@ -69,6 +69,13 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 5
 
   },
+  root1: {
+   
+    backgroundColor: theme.palette.background.paper,
+    marginRight: 20,
+    marginLeft: 5
+
+  },
   drawerHeader: {
     display: 'flex',
     alignItems: 'center',
@@ -80,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const prodaction = false;
-const baseUrl = (prodaction) ? "" : "http://127.0.0.1:5000/";
+const baseUrl = (prodaction) ? "" : "http://192.168.43.81:5000/";
 
 let menuMap = new Map();
 function createMenuMap(tree) {
