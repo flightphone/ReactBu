@@ -577,11 +577,10 @@ function Finder(props) {
             <Drawer anchor="top" open={stateDrawer} onClose={toggleDrawer(false)}>
                 <Pagination id={id} onChangePage={onChangePage} editid={editid} />
             </Drawer>
-            <Drawer anchor="right" open={stateMenu} onClose={toggleMenu(false)}>
+            <Drawer anchor="left" open={stateMenu} onClose={toggleMenu(false)}>
                 <div className={classes.root1}>
                     <List component="nav">
                         {renderEditBut()}
-                        {renderAddListBut()}
                         {(load) ? <Divider /> :
                             <React.Fragment>
                                 <ListItem button onClick={() => { setStateMenu(false); setMode("filter"); }}>
@@ -597,9 +596,8 @@ function Finder(props) {
                                     </ListItemIcon>
                                     <ListItemText primary="Страницы" />
                                 </ListItem>
-
-                            </React.Fragment>
-                        }
+						</React.Fragment>}
+						{renderAddListBut()}
                     </List>
                 </div>
             </Drawer>
