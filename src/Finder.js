@@ -31,6 +31,7 @@ import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import DetailsIcon from '@material-ui/icons/Details';
 import SettingsIcon from '@material-ui/icons/Settings';
 import MoreIcon from '@material-ui/icons/MoreVert';
+import Menu from '@material-ui/core/Menu';
 
 
 
@@ -577,7 +578,9 @@ function Finder(props) {
             <Drawer anchor="top" open={stateDrawer} onClose={toggleDrawer(false)}>
                 <Pagination id={id} onChangePage={onChangePage} editid={editid} />
             </Drawer>
-            <Drawer anchor="left" open={stateMenu} onClose={toggleMenu(false)}>
+            <Menu open={stateMenu} onClose={toggleMenu(false)}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            >
                 <div className={classes.root1}>
                     <List component="nav">
                         {renderEditBut()}
@@ -600,7 +603,7 @@ function Finder(props) {
 						{renderAddListBut()}
                     </List>
                 </div>
-            </Drawer>
+            </Menu>
             <div
                 hidden={!visible}
                 className={classes.fixheight}

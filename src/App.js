@@ -150,7 +150,7 @@ function App(props) {
     () =>
       createMuiTheme({
         palette: {
-          type: prefersDarkMode ? 'dark' : 'light',
+          type: prefersDarkMode ? 'light' : 'light',
         },
       }),
     [prefersDarkMode],
